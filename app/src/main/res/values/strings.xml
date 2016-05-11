@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">한림대학교 출석체크</string>
+    <string name="login">로그인</string>
+    <string name="register">회원가입</string>
+    <string name="reg_ok">가입 완료</string>
+    <string name="passreg">지문 등록</string>
+    <string name="stunum">학번, 사번</string>
+    <string name="pwd">비밀번호</string>
+    <string name="pwdcompare">비밀번호 확인</string>
+    <string name="auto_login">자동 로그인</string>
+    <string name="title_activity_student_main">StudentMainActivity</string>
+</resources>

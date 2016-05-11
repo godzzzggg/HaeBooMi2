@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/registerlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+
+    <View
+        android:id="@+id/centerViewR"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"/>
+
+    <View
+        android:id="@+id/mainViewR"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/btnPassR"
+        android:text="@string/passreg"
+        android:textColor="@color/fontWhite"
+        android:textSize="20dp"
+        android:width="320dp"
+        android:background="@color/hallymBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/mainViewR"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/btnOkR"
+        android:text="@string/reg_ok"
+        android:textColor="@color/fontWhite"
+        android:textSize="20dp"
+        android:width="320dp"
+        android:background="@color/hallymBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_below="@id/btnPassR"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:id="@+id/txtStuNumberR"
+        android:hint="@string/stunum"
+        android:inputType="number"
+        android:maxLength="10"
+        android:textSize="20dp"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/mainViewR"
+        android:layout_marginBottom="30dp"
+        android:layout_alignEnd="@id/mainViewR"
+        android:layout_alignStart="@id/mainViewR" />
+
+    <EditText
+        android:id="@+id/txtPasswordR"
+        android:hint="@string/pwd"
+        android:textSize="20dp"
+        android:maxLength="15"
+        android:password="true"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtStuNumberR"
+        android:layout_marginBottom="30dp"
+        android:layout_alignEnd="@id/mainViewR"
+        android:layout_alignStart="@id/mainViewR" />
+
+    <EditText
+        android:id="@+id/txtPwdCompareR"
+        android:hint="@string/pwdcompare"
+        android:textSize="20dp"
+        android:maxLength="15"
+        android:password="true"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtPasswordR"
+        android:layout_alignEnd="@id/mainViewR"
+        android:layout_alignStart="@id/mainViewR" />
+</RelativeLayout>

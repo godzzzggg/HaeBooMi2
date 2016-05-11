@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+
+    android:background="@color/calendarWhite" >
+
+
+
+    <TextView
+
+        android:id="@+id/tv_date"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="50dp"
+
+        android:background="@color/calendarBlue"
+
+        android:gravity="center_vertical"
+
+        android:paddingLeft="10dp"
+
+        android:textColor="@color/calendarWhite"
+
+        android:textSize="20sp" />
+
+
+
+    <GridView
+
+        android:layout_marginTop="10dp"
+
+        android:id="@+id/gridview"
+
+        android:layout_weight="1"
+
+        android:layout_height="0dp"
+
+        android:layout_width="match_parent"
+
+        android:numColumns="7"
+
+        android:listSelector="@color/calendarSelect"
+
+        >
+
+    </GridView>
+
+
+
+</LinearLayout>

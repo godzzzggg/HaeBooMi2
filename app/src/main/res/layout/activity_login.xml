@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <View
+        android:id="@+id/mainViewL"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:src="@drawable/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/mainViewL"
+        android:layout_marginBottom="30dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"/>
+
+    <Button
+        android:id="@+id/btnLoginL"
+        android:text="@string/login"
+        android:textColor="@color/fontWhite"
+        android:width="320dp"
+        android:textSize="20dp"
+        android:background="@color/hallymBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginBottom="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btnRegisterL"
+        android:text="@string/register"
+        android:textColor="@color/fontWhite"
+        android:width="320dp"
+        android:textSize="20dp"
+        android:background="@color/hallymBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_above="@id/btnLoginL"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/txtStuNumberL"
+        android:inputType="number"
+        android:hint="@string/stunum"
+        android:maxLength="8"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/mainViewL"
+        android:layout_alignEnd="@id/btnRegisterL"
+        android:layout_alignStart="@id/btnRegisterL" />
+
+    <EditText
+        android:id="@+id/txtPasswordL"
+        android:password="true"
+        android:hint="@string/pwd"
+        android:maxLength="15"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtStuNumberL"
+        android:layout_marginTop="10dp"
+        android:layout_alignEnd="@id/btnRegisterL"
+        android:layout_alignStart="@id/btnRegisterL" />
+
+    <CheckBox
+        android:id="@+id/cbxAutoLogin"
+        android:text="@string/auto_login"
+        android:textColor="@color/fontHallym"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/btnRegisterL"
+        android:layout_below="@id/txtPasswordL"
+        android:checked="true" />
+
+</RelativeLayout>
