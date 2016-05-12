@@ -24,8 +24,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DBManager {
+    private final String TAG = "DBManager";
     private static final String SERVER_ADDRESS = "http://59.30.254.247:8080";
     private Activity activity;
 
@@ -33,9 +35,14 @@ public class DBManager {
         super();
         this.activity = activity;
     }
-    public void DBLogin(String id, String pw, String division) {
+    public String DBLogin(String id, String pw, String division) {
+        String returnVal = "fail";
         LoginAsync la = new LoginAsync();
-        la.execute(id, pw, division);
+        try {
+             returnVal = la.execute(id, pw, division).get();
+        }catch(InterruptedException e) {}
+        catch (ExecutionException e) {}
+        return returnVal;
     }
     public void DBRegister(String id, String pw, int passindex, int division) {
         URL url;

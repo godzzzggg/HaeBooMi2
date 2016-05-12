@@ -20,6 +20,7 @@ public class Tab_TimeTableActivity extends Activity {
     private Handler handler;
     private BackPressCloseHandler bpch;
 
+    private DBManager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +28,10 @@ public class Tab_TimeTableActivity extends Activity {
         setContentView(R.layout.activity_tab_time_table);
 
         bpch = new BackPressCloseHandler(this);
+        db = new DBManager(this);
 
-        Intent intent = getIntent();
-        final String stuNum = intent.getStringExtra("student_number");
-        final String password = intent.getStringExtra("password");
+        //db.
+        final String stuNum = "", password = "";
 
         //UI를 건드리는 코드는 스레드 내부가 아닌 핸들러로 처리해야 한다.
         handler = new Handler(){

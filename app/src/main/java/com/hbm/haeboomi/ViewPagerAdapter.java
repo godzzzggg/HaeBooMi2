@@ -1,5 +1,6 @@
 package com.hbm.haeboomi;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,7 +19,6 @@ import com.samsung.android.sdk.pass.SpassFingerprint;
 
 public class ViewPagerAdapter extends PagerAdapter {
     private LayoutInflater minflater;
-    private int COUNT = 0;
     private ViewPager viewP;
     private int posi;
 
@@ -27,6 +27,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     private int passindex;
     private boolean isFeatureEnabled;
     private Context context;
+    private Tab_StudentVPActivity stu_main_activity;
 
     private SpassFingerprint.IdentifyListener listener = new SpassFingerprint.IdentifyListener() {
         @Override
@@ -35,9 +36,12 @@ public class ViewPagerAdapter extends PagerAdapter {
                 //지문인식 성공
                 //passindex에 해당 지문의 index를 넣는다.
                 passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-            } else if (eventStatus == SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS) {
+
+            }
+            else if (eventStatus == SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS) {
                 //지문대신 비밀번호를 입력해서 통과
-            } else {
+            }
+            else {
                 /*  실패사유
                  STATUS_TIMEOUT_FAILED
                  STATUS_USER_CANCELLED
@@ -81,21 +85,25 @@ public class ViewPagerAdapter extends PagerAdapter {
                 mSpassFingerprint = new SpassFingerprint(context);
         }
     }
-
+/*
     public ViewPagerAdapter(Context context, ViewPager v){
         super();
         minflater = LayoutInflater.from(context);
         this.context = context;
         viewP = v;
         posi = 0;
+    }*/
+    public ViewPagerAdapter(Tab_StudentVPActivity activity, ViewPager v){
+        super();
+        minflater = LayoutInflater.from(activity);
+        context = activity;
+        stu_main_activity = activity;
+        viewP = v;
+        posi = 0;
     }
     @Override
     public int getCount() {
         return Integer.MAX_VALUE;
-    }
-
-    public void setCount(int count){
-        COUNT = count;
     }
 
     public int getPosition(){ return posi; }
@@ -128,12 +136,13 @@ public class ViewPagerAdapter extends PagerAdapter {
         btnAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                stu_main_activity.btInit();
                 if (isFeatureEnabled) {
-                    mSpassFingerprint.startIdentifyWithDialog(context, listener, false);
-                    //boolean값은 비밀번호 입력창 유무
+                    mSpassFingerprint.startIdentifyWithDialog(context, listener, false);    //boolean값은 비밀번호 입력창 유무
                 }
                 else
                     Toast.makeText(context, "지문인식 미지원", Toast.LENGTH_SHORT).show();
+                stu_main_activity.btStart();
             }
         });
         ((ViewPager)container).addView(vw);
