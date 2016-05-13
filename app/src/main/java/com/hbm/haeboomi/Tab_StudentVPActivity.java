@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class Tab_StudentVPActivity extends Activity implements View.OnClickListener {
     // Debugging
-    private static final String TAG = "StuMain";
+    private static final String TAG = "EndHBM_StuMain";
 
     private BackPressCloseHandler bpch;
     private ViewPager vp;
@@ -34,7 +34,7 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
     public void btStart() {
         if (!btService.isScanning()) {
             try {
-                Thread.sleep(400);
+                Thread.sleep(500);
             }catch(InterruptedException e) {}
             Log.d(TAG, "스캔 시작");
             if(btService.Start()) {
@@ -78,7 +78,7 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
+        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, getBaseContext(), vp);
         vp.setAdapter(sub_adapter);
         int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         vp.setCurrentItem(center);
@@ -128,7 +128,8 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
-        btService.Stop(true);
+        if(btService != null)
+            btService.Stop(true);
         super.onDestroy();
     }
 

@@ -12,7 +12,7 @@ import com.bitnpulse.beacon.util.*;
 
 public class BTService implements ListenerBeaconScan{
     // Debugging
-    private static final String TAG = "BTService";
+    private static final String TAG = "EndHBM_BTService";
 
     private Tab_StudentVPActivity main;
     private BeaconScanManager bc_Manager;
@@ -83,7 +83,7 @@ public class BTService implements ListenerBeaconScan{
     @Override
     public boolean onBeaconScanned(ArrayList<ContentValues> arrayList) {
         main.UpdateList(arrayList);
-        Log.d(TAG, "스캔 목록");
+        Log.d(TAG, "디바이스 목록");
         for (ContentValues content : arrayList) {
             Log.d(TAG, content.toString());
             m_beacon = new mBeacon();
@@ -96,8 +96,10 @@ public class BTService implements ListenerBeaconScan{
             m_beacon.nRSSIat1M = content.getAsInteger(BeaconConstant.RSSIAt1M);
             m_beacon.nBatteryLevel = content.getAsInteger(BeaconConstant.SERVICE_DATA_BATTERY);
         }
-        if(arrayList.size() != 0)
+        if(arrayList.size() != 0) {
+            Log.d(TAG, "스캔 중지");
             return true;    //스캔 중지
+        }
         else
             return false;
     }

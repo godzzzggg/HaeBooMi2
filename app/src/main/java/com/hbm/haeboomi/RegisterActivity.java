@@ -38,18 +38,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 
     //아래부터 DB
     private DBManager db;
-    public String StuNumber, Password, myJSON;
-
-    //[getData test
-    private static final String TAG_RESULTS="result";
-    private static final String TAG_ID="st_id";
-    private static final String TAG_PW="st_pw";
-
-    JSONArray stu = null;
-    ArrayList<HashMap<String, String>> studentList;
-
-    ListView list;
-    //getData test]
+    public String StuNumber, Password;
 
     private SpassFingerprint.IdentifyListener listener = new SpassFingerprint.IdentifyListener() {
         @Override
@@ -114,10 +103,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        //getData test[
-        studentList = new ArrayList<HashMap<String, String>>();
-        //getData(SERVER_ADDRESS + "/getdata.php");
-        //getData test ]
 
         //배경색을 흰색으로 하려고 만든 객체
         RelativeLayout mRelativeLayout = (RelativeLayout)findViewById(R.id.registerlayout);
@@ -126,12 +111,19 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         //각 버튼, 입력한 값들을 처리하기위한 객체
         Button btnPass = (Button)findViewById(R.id.btnPassR);
         Button btnOk = (Button)findViewById(R.id.btnOkR);
+        btnPass.setOnClickListener(this);
+        btnOk.setOnClickListener(this);
 
+        //url.openStream() 메소드를 실행할 때 필요
+        //다음 문장이 없다면 NetworkOnMainThreadException 이 발생한다.
         if(Build.VERSION.SDK_INT > 9){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        //db
         db = new DBManager(this);
+
         //지문인식을 지원하는 핸드폰인지 확인
         passInit();
         if (isFeatureEnabled) {
@@ -140,9 +132,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
             btnPass.setVisibility(View.INVISIBLE);
             Toast.makeText(context, "지문인식을 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
         }
-
-        btnPass.setOnClickListener(this);
-        btnOk.setOnClickListener(this);
     }
 
     @Override
@@ -182,73 +171,4 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    /*
-    protected void showList() {
-        try {
-            JSONObject jsonObj = new JSONObject(myJSON);
-            stu = jsonObj.getJSONArray(TAG_RESULTS);
-
-            for(int i = 0; i<stu.length(); i++) {
-                JSONObject c = stu.getJSONObject(i);
-                String st_id = c.getString(TAG_ID);
-                String st_pw = c.getString(TAG_PW);
-
-                HashMap<String, String> student = new HashMap<String, String>();
-
-                student.put(TAG_ID, st_id);
-                student.put(TAG_PW, st_pw);
-
-                studentList.add(student);
-            }
-            ListAdapter adapter = new SimpleAdapter(
-                    RegisterActivity.this, studentList, R.layout.activity_register,
-                    new String[]{TAG_ID,TAG_PW},
-                    new int[]{R.id.id, R.id.pw}
-            );
-
-            list.setAdapter(adapter);
-
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    public void getData(String url){
-        class GetDataJSON extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-
-                String uri = params[0];
-
-                BufferedReader bufferedReader = null;
-                try {
-                    URL url = new URL(uri);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    StringBuilder sb = new StringBuilder();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
-                    }
-
-                    return sb.toString().trim();
-
-                }catch(Exception e){
-                    return null;
-                }
-            }
-            @Override
-            protected void onPostExecute(String result){
-                myJSON = result;
-                showList();
-            }
-        }
-        GetDataJSON g = new GetDataJSON();
-        g.execute(url);
-    }
-
-    //getData Test ]
-    */
 }

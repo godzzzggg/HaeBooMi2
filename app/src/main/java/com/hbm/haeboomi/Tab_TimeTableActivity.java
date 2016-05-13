@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Tab_TimeTableActivity extends Activity {
+    private final String TAG = "EndHBM_Tab_TimeTable";
     private WebView web;
     private String source;
     private Handler handler;
@@ -30,7 +32,8 @@ public class Tab_TimeTableActivity extends Activity {
         bpch = new BackPressCloseHandler(this);
         db = new DBManager(this);
 
-        //db.
+        String data = db.getData(DBManager.SERVER_ADDRESS + "/getData.php?index=" + DBManager.GetTable.STUDENT);
+        Log.d(TAG, data);
         final String stuNum = "", password = "";
 
         //UI를 건드리는 코드는 스레드 내부가 아닌 핸들러로 처리해야 한다.

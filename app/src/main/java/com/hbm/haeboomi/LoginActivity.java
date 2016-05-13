@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,7 +17,7 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
     private ProgressDialog pd;
-    private Handler[] handler = new Handler[4];
+    private Handler[] handler = new Handler[2];
     private DBManager db;
 
     @Override
@@ -47,12 +48,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             @Override
             public void handleMessage(Message msg) {
                 pd.dismiss();
-            }
-        };
-        handler[2] = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                Toast.makeText(LoginActivity.this, "학번 및 비밀번호를 확인해 주세요.", Toast.LENGTH_SHORT).show();
             }
         };
 

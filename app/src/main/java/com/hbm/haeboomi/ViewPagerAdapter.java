@@ -1,6 +1,5 @@
 package com.hbm.haeboomi;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -8,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.android.sdk.SsdkUnsupportedException;
@@ -26,46 +23,45 @@ public class ViewPagerAdapter extends PagerAdapter {
     private Spass mSpass;
     private int passindex;
     private boolean isFeatureEnabled;
-    private Context context;
+
     private Tab_StudentVPActivity stu_main_activity;
+    private Context context;
+
+    private DBManager db;
 
     private SpassFingerprint.IdentifyListener listener = new SpassFingerprint.IdentifyListener() {
         @Override
         public void onFinished(int eventStatus) {
-            if (eventStatus == SpassFingerprint.STATUS_AUTHENTIFICATION_SUCCESS) {
-                //지문인식 성공
-                //passindex에 해당 지문의 index를 넣는다.
-                passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-
-            }
-            else if (eventStatus == SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS) {
-                //지문대신 비밀번호를 입력해서 통과
-            }
-            else {
-                /*  실패사유
-                 STATUS_TIMEOUT_FAILED
-                 STATUS_USER_CANCELLED
-                 STATUS_AUTHENTIFICATION_FAILE
-                 STATUS_QUALITY_FAILED
-                 STATUS_USER_CANCELLED_BY_TOUCH_OUTSIDE
-                 STATUS_BUTTON_PRESSED
-                 STATUS_OPERATION_DENIED
-                */
+            switch(eventStatus) {
+                case SpassFingerprint.STATUS_AUTHENTIFICATION_SUCCESS:  //지문인식 성공
+                    stu_main_activity.btStart();
+                    //passindex에 해당 지문의 index를 넣는다.
+                    passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
+                    db.getData(DBManager.SERVER_ADDRESS + "/getdata.php?index=" + DBManager.GetTable.BEACON);
+                    break;
+                case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS: //지문대신 비밀번호를 입력해서 통과
+                    break;
+                //실패사유
+                case SpassFingerprint.STATUS_TIMEOUT_FAILED:
+                case SpassFingerprint.STATUS_USER_CANCELLED:
+                case SpassFingerprint.STATUS_AUTHENTIFICATION_FAILED:
+                case SpassFingerprint.STATUS_QUALITY_FAILED:
+                case SpassFingerprint.STATUS_USER_CANCELLED_BY_TOUCH_OUTSIDE:
+                case SpassFingerprint.STATUS_BUTTON_PRESSED:
+                case SpassFingerprint.STATUS_OPERATION_DENIED:
+                    break;
             }
         }
-
         @Override
         public void onReady() {
             // It is called when fingerprint identification is ready after
             // startIdentify() is called.
         }
-
         @Override
         public void onStarted() {
             // It is called when the user touches the fingerprint sensor after
             // startIdentify() is called.
         }
-
         @Override
         public void onCompleted() {
             //It is called when identify request is completed.
@@ -85,21 +81,22 @@ public class ViewPagerAdapter extends PagerAdapter {
                 mSpassFingerprint = new SpassFingerprint(context);
         }
     }
-/*
-    public ViewPagerAdapter(Context context, ViewPager v){
+
+    /*public ViewPagerAdapter(stu_main_activity stu_main_activity, ViewPager v){
         super();
-        minflater = LayoutInflater.from(context);
-        this.context = context;
+        minflater = LayoutInflater.from(stu_main_activity);
+        this.stu_main_activity = stu_main_activity;
         viewP = v;
         posi = 0;
     }*/
-    public ViewPagerAdapter(Tab_StudentVPActivity activity, ViewPager v){
+    public ViewPagerAdapter(Tab_StudentVPActivity activity, Context context, ViewPager v){
         super();
-        minflater = LayoutInflater.from(activity);
-        context = activity;
+        minflater = LayoutInflater.from(context);
         stu_main_activity = activity;
+        this.context = context;
         viewP = v;
         posi = 0;
+        db = new DBManager(activity);
     }
     @Override
     public int getCount() {
@@ -140,9 +137,12 @@ public class ViewPagerAdapter extends PagerAdapter {
                 if (isFeatureEnabled) {
                     mSpassFingerprint.startIdentifyWithDialog(context, listener, false);    //boolean값은 비밀번호 입력창 유무
                 }
-                else
+                else {
                     Toast.makeText(context, "지문인식 미지원", Toast.LENGTH_SHORT).show();
+                }
                 stu_main_activity.btStart();
+
+                db.getData(DBManager.SERVER_ADDRESS + "/getdata.php?index=" + DBManager.GetTable.BEACON);
             }
         });
         ((ViewPager)container).addView(vw);
