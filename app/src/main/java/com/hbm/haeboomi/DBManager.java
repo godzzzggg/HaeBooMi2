@@ -1,11 +1,16 @@
 package com.hbm.haeboomi;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+//php서버와 접근
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class DBManager {
-    private final String TAG = "EndHBM_DBManager";
+    private static final String TAG = "EndHBM_DBManager";
     private Activity activity;
 
     public static final String SERVER_ADDRESS = "http://59.30.254.247:8080";
@@ -48,7 +53,7 @@ public class DBManager {
             {"ss_id", "ss_cname", "ss_proname", "ss_devide", "ss_subject", "ss_time", "ss_classno", "ss_day", "ss_5075"}
     };
 
-
+    public DBManager() {}
     public DBManager(Activity activity) {
         super();
         this.activity = activity;
@@ -81,16 +86,21 @@ public class DBManager {
         }
     }
 
-    //TODO: ex) getData(DBManager.SERVER_ADDRESS + "/getData.php?index=" + DBManager.GetTable.STUDENT)
-    public String getData(String url) {
+    /**
+     * ex) String str = getData("getData.php", DBManager.GetTable.STUDENT);
+	 * 결과예시 : str : 20115169!1234!-1!null!null!null
+	 * 위 결과를 String[] 배열명 = str.split("!"); 으로 분해하여 사용한다.
+	 */
+    public String getData(String filename, int index) {
         GetDataJSON g = new GetDataJSON();
+        String url = DBManager.SERVER_ADDRESS + "/" + filename + "?index=" + index;
         try {
-            return getList(url.charAt(url.length() - 1) - '0', g.execute(url).get());
+            return getList(g.execute(url).get(), index);
         }catch(InterruptedException e) {}
         catch (ExecutionException e) {}
         return null;
     }
-    private String getList(int index, String rst) {
+    private String getList(String rst, int index) {
         try {
             JSONObject jsonObj = new JSONObject(rst);
             stu = jsonObj.getJSONArray("result");
@@ -160,7 +170,8 @@ public class DBManager {
         }
         @Override
         protected void onPostExecute(String result) {
-            ((LoginActivity)activity).handlerRun(1);    //processDialog 닫기
+            if(activity instanceof LoginActivity)
+                ((LoginActivity)activity).handlerRun(1);    //processDialog 닫기
             if(result.equalsIgnoreCase("success")) { //로그인 성공
                 Intent intent = new Intent(activity, StudentMainActivity.class);
                 activity.finish();
@@ -195,5 +206,43 @@ public class DBManager {
             }
         }
     }
-    //public class
+    public static class innerDB extends SQLiteOpenHelper {
+        private Context context;
+        private SQLiteDatabase db;
+
+        public innerDB(Context context) {
+            super(context, "data.sqlite", null, 1); //context, DB명, CursorFactory, SQLite 버젼
+            this.context = context;
+
+            //생성자 호출만으로는 DB 구축이 안된다.
+            //실제 DB 구축은 getWritableDatabase()메서드를 호출하는 시점에 구축된다.
+
+            //스마트폰 단말기 내의 data/data/database 경로에 파일이 만들어진다.
+            db = this.getWritableDatabase();
+        }
+        @Override   //db가 새로 만들어질 때 1회 호출
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE user (id VARCHAR(8), password VARCHAR(15))");
+        }
+        @Override   //이미 배포했던 db에 변경이 있을경우 호출 / 주로 버젼 변경시 호출됨
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+        //질의 실행
+        public void execSQL(String sql) {
+            db.execSQL(sql);
+        }
+        public String getData(String query) {
+            StringBuilder sb = new StringBuilder();
+            Cursor cs = db.rawQuery(query, null);
+
+            while(cs.moveToNext()) {
+                sb.append(cs.getString(0) + "!" + cs.getString(1));
+                Log.d(TAG, sb.toString());
+            }
+
+            return sb.toString();
+        }
+        public void onDestroy() {
+            db.close();
+        }
+    }
 }

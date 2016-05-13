@@ -78,7 +78,7 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, getBaseContext(), vp);
+        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
         vp.setAdapter(sub_adapter);
         int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         vp.setCurrentItem(center);

@@ -71,14 +71,4 @@
         android:layout_alignEnd="@id/btnRegisterL"
         android:layout_alignStart="@id/btnRegisterL" />
 
-    <CheckBox
-        android:id="@+id/cbxAutoLogin"
-        android:text="@string/auto_login"
-        android:textColor="@color/fontHallym"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/btnRegisterL"
-        android:layout_below="@id/txtPasswordL"
-        android:checked="true" />
-
 </RelativeLayout>

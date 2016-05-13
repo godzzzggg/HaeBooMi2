@@ -1,6 +1,5 @@
 package com.hbm.haeboomi;
 
-import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -25,7 +24,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     private boolean isFeatureEnabled;
 
     private Tab_StudentVPActivity stu_main_activity;
-    private Context context;
+    //private Context context;
 
     private DBManager db;
 
@@ -37,7 +36,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                     stu_main_activity.btStart();
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-                    db.getData(DBManager.SERVER_ADDRESS + "/getdata.php?index=" + DBManager.GetTable.BEACON);
+                    db.getData("getdata.php", DBManager.GetTable.BEACON);
                     break;
                 case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS: //지문대신 비밀번호를 입력해서 통과
                     break;
@@ -71,14 +70,14 @@ public class ViewPagerAdapter extends PagerAdapter {
     private void passInit() {
         mSpass = new Spass();
 
-        try { mSpass.initialize(context); } //지문인식을 위한 객체 초기화
+        try { mSpass.initialize(stu_main_activity); } //지문인식을 위한 객체 초기화
         catch (SsdkUnsupportedException e) {}   //SsdkUnsupportedException을 항상 검사해야함 삼성 sdk를 지원하지 않을 때 발생하는것 같다.
         catch (UnsupportedOperationException e) {}  //운영체제가 지원하지 않을 때
         finally {
             isFeatureEnabled = mSpass.isFeatureEnabled(Spass.DEVICE_FINGERPRINT);
             //지문인식을 지원하는 핸드폰인지 확인
             if (isFeatureEnabled)
-                mSpassFingerprint = new SpassFingerprint(context);
+                mSpassFingerprint = new SpassFingerprint(stu_main_activity);
         }
     }
 
@@ -89,11 +88,11 @@ public class ViewPagerAdapter extends PagerAdapter {
         viewP = v;
         posi = 0;
     }*/
-    public ViewPagerAdapter(Tab_StudentVPActivity activity, Context context, ViewPager v){
+    public ViewPagerAdapter(Tab_StudentVPActivity activity, ViewPager v){
         super();
-        minflater = LayoutInflater.from(context);
         stu_main_activity = activity;
-        this.context = context;
+        minflater = LayoutInflater.from(stu_main_activity);
+        //this.context = context;
         viewP = v;
         posi = 0;
         db = new DBManager(activity);
@@ -135,14 +134,14 @@ public class ViewPagerAdapter extends PagerAdapter {
             public void onClick(View v) {
                 stu_main_activity.btInit();
                 if (isFeatureEnabled) {
-                    mSpassFingerprint.startIdentifyWithDialog(context, listener, false);    //boolean값은 비밀번호 입력창 유무
+                    mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
                 }
                 else {
-                    Toast.makeText(context, "지문인식 미지원", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
                 }
                 stu_main_activity.btStart();
 
-                db.getData(DBManager.SERVER_ADDRESS + "/getdata.php?index=" + DBManager.GetTable.BEACON);
+                db.getData("getdata.php", DBManager.GetTable.BEACON);
             }
         });
         ((ViewPager)container).addView(vw);
