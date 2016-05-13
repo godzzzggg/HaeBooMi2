@@ -78,32 +78,32 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
+	    int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
         vp.setAdapter(sub_adapter);
-        int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         vp.setCurrentItem(center);
 
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                Toast to = null;
-                switch (sub_adapter.getPosition() % 3) {
-                    case 0:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "0", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                    case 1:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "1", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                    case 2:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "2", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                }
+	        @Override
+	        public void onPageSelected(int position) {
+		        Toast to = null;
+		        switch (sub_adapter.getPosition() % 3) {
+			        case 0:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "0", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+			        case 1:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "1", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+			        case 2:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "2", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+		        }
                 /*
                 if (position < COUNT) {        //1번째 아이템에서 마지막 아이템으로 이동하면
                     //vp.setCurrentItem(position + COUNT, false); //이동 애니메이션을 제거 해야 한다
@@ -111,18 +111,22 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
                 else if (position >= COUNT * 2) {    //마지막 아이템에서 1번째 아이템으로 이동하면
                     //vp.setCurrentItem(position - COUNT, false);
                 }*/
-            }
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-            @Override
-            public void onPageScrollStateChanged(int state) {}
+	        }
+
+	        @Override
+	        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+	        }
+
+	        @Override
+	        public void onPageScrollStateChanged(int state) {
+	        }
         });
 
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(this);
         Button btnCenter = (Button)findViewById(R.id.btnCenter);
-        btnCenter.setOnClickListener(this);
         Button btnRight = (Button)findViewById(R.id.btnRight);
+	    btnLeft.setOnClickListener(this);
+	    btnCenter.setOnClickListener(this);
         btnRight.setOnClickListener(this);
     }
 

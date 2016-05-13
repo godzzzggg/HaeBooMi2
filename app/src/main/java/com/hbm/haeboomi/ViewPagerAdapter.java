@@ -66,7 +66,6 @@ public class ViewPagerAdapter extends PagerAdapter {
             //It is called when identify request is completed.
         }
     };
-
     private void passInit() {
         mSpass = new Spass();
 
@@ -81,18 +80,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
     }
 
-    /*public ViewPagerAdapter(stu_main_activity stu_main_activity, ViewPager v){
-        super();
-        minflater = LayoutInflater.from(stu_main_activity);
-        this.stu_main_activity = stu_main_activity;
-        viewP = v;
-        posi = 0;
-    }*/
     public ViewPagerAdapter(Tab_StudentVPActivity activity, ViewPager v){
         super();
         stu_main_activity = activity;
         minflater = LayoutInflater.from(stu_main_activity);
-        //this.context = context;
         viewP = v;
         posi = 0;
         db = new DBManager(activity);
