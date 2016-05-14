@@ -89,17 +89,39 @@ public class DBManager {
 	}
 
 	/**
-	 * ex) String str = getData("getData.php", DBManager.GetTable.STUDENT);
+	 *                          테이블명
+	 * ex) String str = getData(DBManager.GetTable.STUDENT);
 	 * 결과예시 : str : 20115169!1234!-1!null!null!null
 	 * 위 결과를 String[] 배열명 = str.split("!"); 으로 분해하여 사용한다.
 	 */
-	public String getData(String filename, int index) {
+	public String getData(int tableName) {
 		GetDataJSON g = new GetDataJSON();
-		String url = DBManager.SERVER_ADDRESS + filename + "?index=" + index;
-		try {	//바로 아래의 getList를 실행
+		String url = DBManager.SERVER_ADDRESS + "getdata.php?index=" + tableName;
+		try {	//아래의 getList()를 실행
+			return getList(g.execute(url).get(), tableName);	//g.execute(url).get() 수행시 파싱된 JSON 결과를 얻을 수 있다
+		}catch(InterruptedException e) {}
+		catch (ExecutionException e) {}
+		return null;
+	}
+	/**
+	 * 간단한 select 질의 수행 가능
+	 * ex String data = getSelectData("*", "student", null or "st_id = 20115169", DBManager.GetTable.STUDENT);
+	 *                          select * from student (where st_id = 20115169)
+	 */
+	public String getSelectData(String select, String from, String where, int index) {
+		GetDataJSON g = new GetDataJSON();
+		String url = DBManager.SERVER_ADDRESS + "getdataq.php?index=" + index;
+
+		url += "&select=" + parsePHP(select);
+		url += "&from=" + parsePHP(from);
+		if(where != null)
+			url += "&where=" + parsePHP(where);
+
+		try {	//아래의 getList()를 실행
 			return getList(g.execute(url).get(), index);	//g.execute(url).get() 수행시 파싱된 JSON 결과를 얻을 수 있다
 		}catch(InterruptedException e) {}
 		catch (ExecutionException e) {}
+
 		return null;
 	}
 	private String getList(String rst, int index) {
@@ -119,6 +141,24 @@ public class DBManager {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	private String parsePHP(String str) {
+		String url = null;
+		String pattern = "= ,";
+		String word = null;
+		for(int i = 0; i < pattern.length(); i++) {
+			char p = pattern.charAt(i);
+			String[] temp = str.split(String.valueOf(p));
+			word = temp[0];
+			for (int j = 1; j < temp.length; j++) {
+				if(p == ' ')
+					word += "+" + temp[j];
+				else
+					word += "%" + Integer.toHexString(p) + temp[j];
+			}
+			url += word;
+		}
+		return url;
 	}
 	
 	public static class GetTable {

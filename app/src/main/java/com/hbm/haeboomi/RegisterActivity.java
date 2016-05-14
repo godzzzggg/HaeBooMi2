@@ -33,7 +33,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 				case SpassFingerprint.STATUS_AUTHENTIFICATION_SUCCESS:	//지문인식 성공
 					//passindex에 해당 지문의 index를 넣는다.
 					passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-					db.getData("getdata.php", DBManager.GetTable.BEACON);
+					db.getData(DBManager.GetTable.BEACON);
 					break;
 				case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS:	//지문대신 비밀번호를 입력해서 통과
 					break;

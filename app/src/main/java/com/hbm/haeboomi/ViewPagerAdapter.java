@@ -13,7 +13,7 @@ import com.samsung.android.sdk.pass.Spass;
 import com.samsung.android.sdk.pass.SpassFingerprint;
 
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListener {
     private LayoutInflater minflater;
     private ViewPager viewP;
     private int posi;
@@ -36,7 +36,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                     stu_main_activity.btStart();
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-                    db.getData("getdata.php", DBManager.GetTable.BEACON);
+                    db.getData(DBManager.GetTable.BEACON);
                     break;
                 case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS: //지문대신 비밀번호를 입력해서 통과
                     break;
@@ -104,42 +104,45 @@ public class ViewPagerAdapter extends PagerAdapter {
         this.posi = p;
 
         Button btnPrev = (Button)vw.findViewById(R.id.btnPrev);
-        btnPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewP.setCurrentItem(p - 1);
-            }
-        });
+	    Button btnNext = (Button)vw.findViewById(R.id.btnNext);
+	    Button btnAttendance = (Button) vw.findViewById(R.id.btnAttendance);
+        btnPrev.setOnClickListener(this);
+        btnNext.setOnClickListener(this);
+        btnAttendance.setOnClickListener(this);
 
-        Button btnNext = (Button)vw.findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewP.setCurrentItem(p + 1);
-            }
-        });
-
-        Button btnAttendance = (Button) vw.findViewById(R.id.btnAttendance);
-        btnAttendance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stu_main_activity.btInit();
-                if (isFeatureEnabled) {
-                    mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
-                }
-                else {
-                    Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
-                }
-                stu_main_activity.btStart();
-
-                db.getData("getdata.php", DBManager.GetTable.BEACON);
-            }
-        });
         ((ViewPager)container).addView(vw);
         return vw;
     }
 
-    @Override
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+			case R.id.btnPrev:
+				viewP.setCurrentItem(posi - 1);
+				break;
+			case R.id.btnNext:
+				viewP.setCurrentItem(posi + 1);
+				break;
+			case R.id.btnAttendance:
+				stu_main_activity.btInit();
+				if (isFeatureEnabled) {
+					mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
+				}
+				else {
+					Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
+				}
+				stu_main_activity.btStart();
+
+				String[] beacon = db.getData(DBManager.GetTable.BEACON).split("!");
+				String bc_mac = beacon[0];
+				String bc_classno = beacon[1];
+
+				;
+				break;
+		}
+	}
+
+	@Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View)object);
     }

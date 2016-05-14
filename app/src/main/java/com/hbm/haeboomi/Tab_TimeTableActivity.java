@@ -31,10 +31,12 @@ public class Tab_TimeTableActivity extends Activity {
 
 		bpch = new BackPressCloseHandler(this);
 		db = new DBManager(this);
+		DBManager.innerDB innerDB = new DBManager.innerDB(this);
 
-		String data = db.getData("getData.php", DBManager.GetTable.STUDENT);
-		Log.d(TAG, data);
-		final String stuNum = "", password = "";
+		String[] idpw = innerDB.getData("select * from user").split("!");
+		innerDB.onDestroy();
+
+		final String stuNum = idpw[0], password = idpw[1];
 
 		//UI를 건드리는 코드는 스레드 내부가 아닌 핸들러로 처리해야 한다.
 		handler = new Handler(){
@@ -97,8 +99,7 @@ public class Tab_TimeTableActivity extends Activity {
 				}
 				conn.disconnect();
 			}
-		} catch (Exception ex) {
-		}
+		} catch (Exception ex) {}
 
 		return html.toString();
 	}
