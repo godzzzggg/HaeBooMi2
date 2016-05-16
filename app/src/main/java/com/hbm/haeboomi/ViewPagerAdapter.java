@@ -2,6 +2,7 @@ package com.hbm.haeboomi;
 
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,12 @@ import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.pass.Spass;
 import com.samsung.android.sdk.pass.SpassFingerprint;
 
+import java.util.Calendar;
+
 
 public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListener {
+	private final String TAG = "EndHBM_VPAdapter";
+
     private LayoutInflater minflater;
     private ViewPager viewP;
     private int posi;
@@ -24,7 +29,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
     private boolean isFeatureEnabled;
 
     private Tab_StudentVPActivity stu_main_activity;
-    //private Context context;
 
     private DBManager db;
 
@@ -113,7 +117,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
         ((ViewPager)container).addView(vw);
         return vw;
     }
-
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -132,23 +135,44 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 					Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
 				}
 				stu_main_activity.btStart();
-
-				String[] beacon = db.getData(DBManager.GetTable.BEACON).split("!");
-				String bc_mac = beacon[0];
-				String bc_classno = beacon[1];
-
-				;
+				attendance();
 				break;
 		}
 	}
-
 	@Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View)object);
     }
-
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
+
+	private void attendance() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(!stu_main_activity.isCheck_arraysize());
+				DBManager.innerDB innerDB = new DBManager.innerDB(stu_main_activity);
+				Calendar calendar = Calendar.getInstance();
+				String[] beacon = db.getData(DBManager.GetTable.BEACON).split("!");
+				String bc_mac = beacon[0];
+				String bc_classno = beacon[1];
+				String id = innerDB.getData("select * from user").split("!")[0];
+				String[] days = {"일", "월", "화", "수", "목", "금", "토"};
+
+				if(stu_main_activity.isEqual(bc_mac)) {
+					//if(db.attendance(id, "월", "14:00:00", bc_classno)) {
+					String day = days[calendar.get(Calendar.DAY_OF_WEEK) - 1];  //1(일)~7(토)의 결과가 나오므로 -1해줌
+					int minute = calendar.get(Calendar.MINUTE);
+					int hour = calendar.get(Calendar.HOUR);
+					if(minute != 0) hour++;
+					String time = hour + ":00:00";
+					if(db.attendance(id, day, time, bc_classno)) {
+						Log.d(TAG, "출석체크 완료");
+					}
+				}
+			}
+		}).start();
+	}
 }

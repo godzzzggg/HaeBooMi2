@@ -31,7 +31,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -43,12 +46,12 @@ public class DBManager {
 
 	//getData
 	private String[][] table = {
-			{"atd_class", "atd_cname", "atd_id", "atd_check", "atd_divide", "atd_date"},
-			{"bc_sn", "bc_classno"},
-			{"pr_id", "pr_pw", "st_name"},
-			{"ps_id", "ps_devide", "ps_subject", "ps_time", "ps_day", "ps_5075"},
-			{"st_id", "st_pw", "st_pass", "st_name", "st_dept", "st_year"},
-			{"ss_id", "ss_cname", "ss_proname", "ss_devide", "ss_subject", "ss_time", "ss_classno", "ss_day", "ss_5075"}
+			{"class", "cname", "id", "result", "divide", "date"},
+			{"mac", "classno"},
+			{"id", "pw", "pro_name"},
+			{"id", "divide", "cname", "time", "day", "5075"},
+			{"id", "pw", "pass", "stu_name", "dept", "year"},
+			{"id", "cname", "pro_name", "divide", "time", "classno", "day", "5075"}
 	};
 
 	public DBManager(Activity activity) {
@@ -78,9 +81,14 @@ public class DBManager {
 				url = new URL(u);
 			}
 			HttpURLConnection con = (HttpURLConnection)url.openConnection();
+			con.setRequestMethod("POST");
+			con.setDoInput(true);
+			con.setDoOutput(true);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
 			data = buffer.readLine();
+			buffer.close();
+			con.disconnect();
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 		}
@@ -143,24 +151,70 @@ public class DBManager {
 		return null;
 	}
 	private String parsePHP(String str) {
-		String url = null;
-		String pattern = "= ,";
+		String url = str;
+		String pattern = "= ,`:";
 		String word = null;
 		for(int i = 0; i < pattern.length(); i++) {
+			boolean change = false;
 			char p = pattern.charAt(i);
-			String[] temp = str.split(String.valueOf(p));
+			String[] temp = url.split(String.valueOf(p));
 			word = temp[0];
 			for (int j = 1; j < temp.length; j++) {
+				change = true;
 				if(p == ' ')
 					word += "+" + temp[j];
 				else
 					word += "%" + Integer.toHexString(p) + temp[j];
 			}
-			url += word;
+			if(change)
+				url = word;
 		}
 		return url;
 	}
-	
+
+	public boolean attendance(String id, String day, String time, String c) {
+		String data = null;
+
+		try {
+			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + parsePHP(time) + "&class=" + c;
+			URL url = new URL(u);
+			HttpURLConnection con = (HttpURLConnection)url.openConnection();
+			con.setRequestMethod("POST");
+			con.setDoInput(true);
+			con.setDoOutput(true);
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+			data = buffer.readLine();
+			buffer.close();
+			con.disconnect();
+			if(data.equalsIgnoreCase("success")) {
+				//select cname, divide from st_schedule where id = 20115169
+				String[] temp = getSelectData("cname, divide", "st_schedule", "id = " + id, GetTable.ST_SCHEDULE).split("!");
+				String[] schedule = new String[2];
+				for (int i = 0, j = 0; j < schedule.length && i < temp.length; i++)
+					if(temp[i] != null)
+						schedule[j++] = temp[i];
+
+				u = SERVER_ADDRESS + "attendance_insert.php?" + "id=" + id + "&cname=" + schedule[0] + "&divide=" + schedule[1]
+						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+				url = new URL(u);
+				con = (HttpURLConnection)url.openConnection();
+				buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+				data = buffer.readLine();
+				if(data.equalsIgnoreCase("success"))
+					return true;
+				else
+					Log.e(TAG, "이미 출석 완료함");
+			}
+			else
+				return false;
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+		}
+		return false;
+	}
+
 	public static class GetTable {
 		public static int ATTENDANCE = 0;
 		public static int BEACON = 1;
@@ -178,8 +232,8 @@ public class DBManager {
 
 			InputStream is = null;
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			nameValuePairs.add(new BasicNameValuePair("st_id", id));
-			nameValuePairs.add(new BasicNameValuePair("st_pw", pw));
+			nameValuePairs.add(new BasicNameValuePair(division.charAt(0)=='s'? "st_id" : "pr_id", id));
+			nameValuePairs.add(new BasicNameValuePair(division.charAt(0)=='s'? "st_pw" : "pr_pw", pw));
 			String result = null;
 
 			try{
@@ -233,6 +287,9 @@ public class DBManager {
 			try {
 				URL url = new URL(uri);
 				HttpURLConnection con = (HttpURLConnection)url.openConnection();
+				con.setRequestMethod("POST");
+				con.setDoOutput(true);
+				con.setDoInput(true);
 				StringBuilder sb = new StringBuilder();
 
 				bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));

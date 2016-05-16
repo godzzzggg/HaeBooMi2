@@ -24,14 +24,22 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
     private BTService btService;
     private DeviceAdapter adapter;
+	private ArrayList<ContentValues> device_array;
+	private boolean check_arraysize = false;
 
     public void btInit() {
         if(btService == null)
-            btService = new BTService(this, this, this);
-        adapter = new DeviceAdapter(this, new ArrayList<ContentValues>());
+            btService = new BTService(this, this);
+	    else if(btService.isNull()) {
+	        btService = null;
+	        btService = new BTService(this, this);
+        }
+	    device_array = new ArrayList<ContentValues>();
+        adapter = new DeviceAdapter(this, device_array);
     }
 
-    public void btStart() {
+    public boolean btStart() {
+	    boolean returnVal = false;
         if (!btService.isScanning()) {
             try {
                 Thread.sleep(500);
@@ -40,31 +48,33 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
             if(btService.Start()) {
                 adapter.clear();    //어댑터 목록 초기화
                 adapter.notifyDataSetChanged();
+	            returnVal = true;
             }
             else {
                 Log.e(TAG, "스캔 실패... 블루투스가 꺼져있는지 확인");
+	            btStart();
             }
         }
         else {
             btService.Stop(false);
         }
+	    return returnVal;
     }
+
+	public boolean isCheck_arraysize() {
+		return check_arraysize;
+	}
 
     public void UpdateList(ArrayList<ContentValues> arrayList) {
         adapter.UpdateList(arrayList);
-        String mac = "D4:C9:41:44:37:7F";
-        if(isEqual(arrayList, mac))
-            Log.d(TAG, mac + " 있다");
-        else
-            Log.d(TAG, mac + " 없다");
+	    if(arrayList.size() != 0) check_arraysize = true;
     }
 
-    public boolean isEqual(ArrayList<ContentValues> arrayList, String mac) {
+    public boolean isEqual(String mac) {
         boolean equal = false;
 
-        for(ContentValues content : arrayList)
-            if((equal = content.getAsString(BeaconConstant.MAC_ADDRESS).equals(mac)))
-                return equal;
+        for(ContentValues content : device_array)
+            if((equal = content.getAsString(BeaconConstant.MAC_ADDRESS).equalsIgnoreCase(mac))) break;
 
         return equal;
     }
