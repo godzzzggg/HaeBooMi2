@@ -9,4 +9,5 @@
     <string name="pwdcompare">비밀번호 확인</string>
     <string name="auto_login">자동 로그인</string>
     <string name="title_activity_student_main">StudentMainActivity</string>
+    <string name="title_activity_pftimetable">Pftimetable</string>
 </resources>

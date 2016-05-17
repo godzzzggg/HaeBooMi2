@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    tools:context="com.hbm.haeboomi.Professor.PfVpager">
+
+    <TextView
+        android:id="@+id/lblPfToday"
+        android:text="Today"
+        android:textSize="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/lblPfClassName"
+        android:text="강의명"
+        android:textSize="50dp"
+        android:layout_marginTop="40dp"
+        android:textAlignment="center"
+        android:layout_below="@id/lblPfToday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/lblPfClassRoom"
+        android:text="신관명(구관명) / 1111"
+        android:textSize="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/lblPfClassName"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/lblPfClassTime"
+        android:text="14:00 ~ 16:00"
+        android:textSize="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/lblPfClassRoom"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnInOut"
+        android:text="출결 현황"
+        android:textSize="30dp"
+        android:width="300dp"
+        android:height="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnPfPrev"
+        android:text="이전"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btnPfNext"
+        android:text="다음"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

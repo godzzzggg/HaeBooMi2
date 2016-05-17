@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.hbm.haeboomi"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hbm.haeboomi">
 
     <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -32,6 +32,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainSplash" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
+        <activity android:name=".Tab_ProfessorVPActivity" />
+        <activity android:name=".Timetable" />
+        <activity android:name=".Tab_ClassSettingActivity" />
+        <activity android:name=".CheckATNum" />
+        <activity android:name=".CheckLTNum" />
+        <activity android:name=".CheckRTNum" />
+        <activity android:name=".ProfessorMainActivity" />
     </application>
 
 </manifest>
