@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class Tab_TimeSettingActivity extends Activity {
+    private final String TAG = "EndHBM_TimeSetting";
     private BackPressCloseHandler bpch;
 
     @Override

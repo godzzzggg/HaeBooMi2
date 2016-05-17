@@ -8,7 +8,7 @@ import android.view.*;
 import android.widget.*;
 
 public class DeviceAdapter extends ArrayAdapter<ContentValues> {
-    private final String TAG = "DeviceAdapter";
+    private final String TAG = "EndHBM_DeviceAdapter";
 
     public DeviceAdapter(Context context, List<ContentValues> objects) {
         super(context, R.layout.beacon_device_list, objects);

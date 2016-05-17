@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class Tab_StudentVPActivity extends Activity implements View.OnClickListener {
     // Debugging
-    private static final String TAG = "StuMain";
+    private static final String TAG = "EndHBM_StuMain";
 
     private BackPressCloseHandler bpch;
     private ViewPager vp;
@@ -24,47 +24,57 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
     private BTService btService;
     private DeviceAdapter adapter;
+	private ArrayList<ContentValues> device_array;
+	private boolean check_arraysize = false;
 
     public void btInit() {
         if(btService == null)
-            btService = new BTService(this, this, this);
-        adapter = new DeviceAdapter(this, new ArrayList<ContentValues>());
+            btService = new BTService(this, this);
+	    else if(btService.isNull()) {
+	        btService = null;
+	        btService = new BTService(this, this);
+        }
+	    device_array = new ArrayList<ContentValues>();
+        adapter = new DeviceAdapter(this, device_array);
     }
 
-    public void btStart() {
+    public boolean btStart() {
+	    boolean returnVal = false;
         if (!btService.isScanning()) {
             try {
-                Thread.sleep(400);
+                Thread.sleep(500);
             }catch(InterruptedException e) {}
             Log.d(TAG, "스캔 시작");
             if(btService.Start()) {
                 adapter.clear();    //어댑터 목록 초기화
                 adapter.notifyDataSetChanged();
+	            returnVal = true;
             }
             else {
                 Log.e(TAG, "스캔 실패... 블루투스가 꺼져있는지 확인");
+	            btStart();
             }
         }
         else {
             btService.Stop(false);
         }
+	    return returnVal;
     }
+
+	public boolean isCheck_arraysize() {
+		return check_arraysize;
+	}
 
     public void UpdateList(ArrayList<ContentValues> arrayList) {
         adapter.UpdateList(arrayList);
-        String mac = "D4:C9:41:44:37:7F";
-        if(isEqual(arrayList, mac))
-            Log.d(TAG, mac + " 있다");
-        else
-            Log.d(TAG, mac + " 없다");
+	    if(arrayList.size() != 0) check_arraysize = true;
     }
 
-    public boolean isEqual(ArrayList<ContentValues> arrayList, String mac) {
+    public boolean isEqual(String mac) {
         boolean equal = false;
 
-        for(ContentValues content : arrayList)
-            if((equal = content.getAsString(BeaconConstant.MAC_ADDRESS).equals(mac)))
-                return equal;
+        for(ContentValues content : device_array)
+            if((equal = content.getAsString(BeaconConstant.MAC_ADDRESS).equalsIgnoreCase(mac))) break;
 
         return equal;
     }
@@ -78,32 +88,32 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
+	    int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
         vp.setAdapter(sub_adapter);
-        int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         vp.setCurrentItem(center);
 
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                Toast to = null;
-                switch (sub_adapter.getPosition() % 3) {
-                    case 0:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "0", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                    case 1:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "1", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                    case 2:
-                        if (to != null) to.cancel();
-                        to = Toast.makeText(Tab_StudentVPActivity.this, "2", Toast.LENGTH_SHORT);
-                        to.show();
-                        break;
-                }
+	        @Override
+	        public void onPageSelected(int position) {
+		        Toast to = null;
+		        switch (sub_adapter.getPosition() % 3) {
+			        case 0:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "0", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+			        case 1:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "1", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+			        case 2:
+				        if (to != null) to.cancel();
+				        to = Toast.makeText(Tab_StudentVPActivity.this, "2", Toast.LENGTH_SHORT);
+				        to.show();
+				        break;
+		        }
                 /*
                 if (position < COUNT) {        //1번째 아이템에서 마지막 아이템으로 이동하면
                     //vp.setCurrentItem(position + COUNT, false); //이동 애니메이션을 제거 해야 한다
@@ -111,24 +121,29 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
                 else if (position >= COUNT * 2) {    //마지막 아이템에서 1번째 아이템으로 이동하면
                     //vp.setCurrentItem(position - COUNT, false);
                 }*/
-            }
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-            @Override
-            public void onPageScrollStateChanged(int state) {}
+	        }
+
+	        @Override
+	        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+	        }
+
+	        @Override
+	        public void onPageScrollStateChanged(int state) {
+	        }
         });
 
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(this);
         Button btnCenter = (Button)findViewById(R.id.btnCenter);
-        btnCenter.setOnClickListener(this);
         Button btnRight = (Button)findViewById(R.id.btnRight);
+	    btnLeft.setOnClickListener(this);
+	    btnCenter.setOnClickListener(this);
         btnRight.setOnClickListener(this);
     }
 
     @Override
     protected void onDestroy() {
-        btService.Stop(true);
+        if(btService != null)
+            btService.Stop(true);
         super.onDestroy();
     }
 
