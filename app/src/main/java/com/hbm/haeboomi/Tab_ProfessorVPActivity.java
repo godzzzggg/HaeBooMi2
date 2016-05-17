@@ -26,7 +26,7 @@ public class Tab_ProfessorVPActivity extends Activity implements View.OnClickLis
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
+        final PfViewPagerAdapter sub_adapter = new PfViewPagerAdapter(this, vp);
         vp.setAdapter(sub_adapter);
         int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
         vp.setCurrentItem(center);
@@ -62,7 +62,37 @@ public class Tab_ProfessorVPActivity extends Activity implements View.OnClickLis
             }
 
             @Override
-            public void onBackPressed() {
-                bpch.onBackPressed();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+        Button btnPfLeft = (Button) findViewById(R.id.btnPfLeft);
+        Button btnPfCenter = (Button)findViewById(R.id.btnPfCenter);
+        Button btnPfRight = (Button)findViewById(R.id.btnPfRight);
+        btnPfLeft.setOnClickListener(this);
+        btnPfCenter.setOnClickListener(this);
+        btnPfRight.setOnClickListener(this);
+    }
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnPfLeft:
+                startActivity(new Intent(Tab_ProfessorVPActivity.this, CheckATNum.class));
+                break;
+            case R.id.btnPfCenter:
+                startActivity(new Intent(Tab_ProfessorVPActivity.this, CheckLTNum.class));
+                break;
+            case R.id.btnPfRight:
+                startActivity(new Intent(Tab_ProfessorVPActivity.this, CheckRTNum.class));
+                break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        bpch.onBackPressed();
+    }
+}
