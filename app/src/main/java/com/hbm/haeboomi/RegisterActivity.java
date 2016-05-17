@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -140,7 +141,9 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 
 						if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
 							innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
+							Log.d("endhbm_Register", innerDB.getData("select * from user"));
 							innerDB.onDestroy();
+							db.putSchedule();
 							finish();
 							startActivity(new Intent(this, StudentMainActivity.class));
 						}

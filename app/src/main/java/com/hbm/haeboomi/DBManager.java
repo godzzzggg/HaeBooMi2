@@ -23,6 +23,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -173,8 +178,6 @@ public class DBManager {
 	}
 
 	public boolean attendance(String id, String day, String time, String c) {
-		String data = null;
-
 		try {
 			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + parsePHP(time) + "&class=" + c;
 			URL url = new URL(u);
@@ -184,7 +187,7 @@ public class DBManager {
 			con.setDoOutput(true);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-			data = buffer.readLine();
+			String data = buffer.readLine();
 			buffer.close();
 			con.disconnect();
 			if(data.equalsIgnoreCase("success")) {
@@ -213,6 +216,53 @@ public class DBManager {
 			Log.e(TAG, e.getMessage());
 		}
 		return false;
+	}
+	public String[] nowTime() {
+		GetDataJSON json = new GetDataJSON();
+		String[] data = null;
+		try {
+			//날짜, 시간이 각각 들어간다
+			data = json.execute(SERVER_ADDRESS + "nowtime.php").get().split("!");
+		}catch(InterruptedException e) {}
+		catch(ExecutionException e) {}
+		return data;
+	}
+	public void putSchedule() {
+		try {
+			innerDB innerDB = new innerDB(activity);
+			String[] idpw = innerDB.getData("select * from user").split("!");
+			String u = "http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=" + idpw[0] + "&password=" + idpw[1];
+			URL url = new URL(u);
+
+			HttpURLConnection con = (HttpURLConnection)url.openConnection();
+			con.setRequestMethod("POST");
+			con.setDoInput(true);
+			con.setDoOutput(true);
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+			String data;
+
+			while((data = buffer.readLine()) != null) {
+				if(data.length() != 0) {
+					//코드 정리
+					data = data.substring(23, data.length() - 2);
+					data = data.replace("\\n", " ");
+					data = data.replace("\\", "");
+				}
+			}
+			Document doc = Jsoup.parse(data);
+			Elements elements = doc.select("span.ltd2");
+
+			for(Element e : elements) {
+				Iterator<Element> iter = e.getAllElements().iterator();
+				while(iter.hasNext())
+					Log.d(TAG, iter.next().text());
+			}
+			buffer.close();
+			con.disconnect();
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+		}
 	}
 
 	public static class GetTable {

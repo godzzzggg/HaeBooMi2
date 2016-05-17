@@ -104,8 +104,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 
         passInit();
 
-        final int p = position;
-        this.posi = p;
+        this.posi = position;
 
         Button btnPrev = (Button)vw.findViewById(R.id.btnPrev);
 	    Button btnNext = (Button)vw.findViewById(R.id.btnNext);
@@ -121,10 +120,10 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.btnPrev:
-				viewP.setCurrentItem(posi - 1);
+				viewP.setCurrentItem(--posi);
 				break;
 			case R.id.btnNext:
-				viewP.setCurrentItem(posi + 1);
+				viewP.setCurrentItem(++posi);
 				break;
 			case R.id.btnAttendance:
 				stu_main_activity.btInit();
@@ -162,13 +161,12 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 				String[] days = {"일", "월", "화", "수", "목", "금", "토"};
 
 				if(stu_main_activity.isEqual(bc_mac)) {
-					//if(db.attendance(id, "월", "14:00:00", bc_classno)) {
-					String day = days[calendar.get(Calendar.DAY_OF_WEEK) - 1];  //1(일)~7(토)의 결과가 나오므로 -1해줌
-					int minute = calendar.get(Calendar.MINUTE);
-					int hour = calendar.get(Calendar.HOUR);
-					if(minute != 0) hour++;
+					String[] now = db.nowTime();
+					int minute = Integer.parseInt(now[1].split(":")[1]);
+					int hour = Integer.parseInt(now[1].split(":")[0]);
+					if(minute != 0 && minute > 49) hour++;
 					String time = hour + ":00:00";
-					if(db.attendance(id, day, time, bc_classno)) {
+					if(db.attendance(id, now[0], time, bc_classno)) {
 						Log.d(TAG, "출석체크 완료");
 					}
 				}
