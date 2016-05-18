@@ -141,8 +141,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 						if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
 							innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
 							innerDB.onDestroy();
-							finish();
-							startActivity(new Intent(this, StudentMainActivity.class));
+							if(stuNum.length() == 8) {
+								finish();
+								startActivity(new Intent(this, StudentMainActivity.class));
+							}
+							else {
+								finish();
+								startActivity(new Intent(this, ProfessorMainActivity.class));
+							}
 						}
 						else Toast.makeText(this, "이미 존재하는 학번/사번 입니다.", Toast.LENGTH_SHORT).show();
 					}
