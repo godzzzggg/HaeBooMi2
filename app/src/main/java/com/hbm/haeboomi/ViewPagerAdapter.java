@@ -31,7 +31,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 
     private DBManager db;
 
-    private int temp =0;
+    private int temp ;
 
     private SpassFingerprint.IdentifyListener listener = new SpassFingerprint.IdentifyListener() {
         @Override
@@ -42,7 +42,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
                     db.getData(DBManager.GetTable.BEACON);
-                    temp = (int)(Math.random()*4)+1;
+                    temp = (int)(Math.random()*4);
                     Log.d("VPAdapter", "" + temp);
                     stu_main_activity.newCalendar(temp);
                     break;

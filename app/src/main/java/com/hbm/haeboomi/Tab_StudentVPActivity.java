@@ -28,9 +28,8 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 	private boolean check_arraysize = false;
 
     ///////////////////////
-    private int temp;
+    private int temp=4;
     public void newCalendar(int t) {
-        Log.d(TAG, "" + t);
         Intent intent = new Intent(this, CalendarActivity.class);
         temp = t;
         intent.putExtra("random", temp);
