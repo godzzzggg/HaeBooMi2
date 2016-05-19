@@ -150,7 +150,7 @@ public class CalendarActivity extends Activity  {
                 else {
                     check = false;
                 }
-                if(mon ==  1)
+                if((mon+1) ==  0)
                     btnPrevC.setVisibility(View.INVISIBLE);
                 else
                     btnPrevC.setVisibility(View.VISIBLE);
