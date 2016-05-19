@@ -32,7 +32,7 @@ public class CalendarActivity extends Activity  {
     private GridView gridView;
     // 캘린더 변수
     private Calendar mCal;
-    private int temp = 0;
+    private int temp = 4;
     private int day[][] = new int[12][31];
     private int mon;
     private DBManager DBM;
@@ -60,6 +60,10 @@ public class CalendarActivity extends Activity  {
         for(int i = 0; i < Std_info.length; i++)
             if(Std_info[i] != null)
                 Log.d("Student ", "String [" + i + "] : " + Std_info[i]);
+        for(int i = 0; i < day.length; i++) {
+            for(int j = 0; j < day[i].length; j++)
+                day[i][j] = 4;
+        }
 
         int j = 4;
         int cnt = 0;
@@ -191,13 +195,13 @@ public class CalendarActivity extends Activity  {
                 dayList.add("" + (i + 1));
             }
             else{
-                if(day[month-1][i]==1)
+                if(day[month-1][i]==0)
                     dayList.add("" + (i + 1)+"\n결석");
-                else if(day[month-1][i]==2)
+                else if(day[month-1][i]==1)
                     dayList.add("" + (i + 1)+"\n지각");
-                else if(day[month-1][i]==3)
+                else if(day[month-1][i]==2)
                     dayList.add("" + (i + 1)+"\n출석");
-                else if(day[month-1][i]==4)
+                else if(day[month-1][i]==3)
                     dayList.add("" + (i + 1)+"\n임시출석");
                 else
                     dayList.add("" + (i + 1));
@@ -259,16 +263,17 @@ public class CalendarActivity extends Activity  {
 
             //Log.d("Calendar ", "position : " + position);
             //Log.d("Calendar ", "sToday : " + getItem(position));
+
             if(check == true){
                 if (sToday.equals(getItem(position))) { //오늘 day 텍스트 컬러 변경
                     holder.tvItemGridView.setTextColor(getResources().getColor(R.color.calendarBlack));
-                    if (temp == 1) {
+                    if (temp == 0) {
                         holder.tvItemGridView.setText("" + getItem(position) + "\n결석");
-                    } else if (temp == 2) {
+                    } else if (temp == 1) {
                         holder.tvItemGridView.setText("" + getItem(position) + "\n지각");
-                    } else if (temp == 3) {
+                    } else if (temp == 2) {
                         holder.tvItemGridView.setText("" + getItem(position) + "\n출석");
-                    } else if (temp == 4) {
+                    } else if (temp == 3) {
                         holder.tvItemGridView.setText("" + getItem(position) + "\n임시출석");
                     } else {
                         holder.tvItemGridView.setText("" + getItem(position));
