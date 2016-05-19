@@ -147,6 +147,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 						if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
 							//innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
 							innerDB.onDestroy();
+
 							new Thread(new Runnable() {
 								@Override
 								public void run() {

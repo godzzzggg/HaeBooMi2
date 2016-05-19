@@ -27,10 +27,11 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
     private Spass mSpass;
     private int passindex;
     private boolean isFeatureEnabled;
-
     private Tab_StudentVPActivity stu_main_activity;
 
     private DBManager db;
+
+    private int temp =0;
 
     private SpassFingerprint.IdentifyListener listener = new SpassFingerprint.IdentifyListener() {
         @Override
@@ -41,6 +42,9 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
                     db.getData(DBManager.GetTable.BEACON);
+                    temp = (int)(Math.random()*4)+1;
+                    Log.d("VPAdapter", "" + temp);
+                    stu_main_activity.newCalendar(temp);
                     break;
                 case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS: //지문대신 비밀번호를 입력해서 통과
                     break;

@@ -34,10 +34,12 @@ public class MainSplash extends Activity {
 					pw = data[1];
 
 					innerDB.onDestroy();
+					startActivity(new Intent(MainSplash.this, LoginActivity.class));
+					/*
 					if(id.length() == 8)
 						db.DBLogin(id, pw, "0");	//학생
 					else
-						db.DBLogin(id, pw, "1");	//교수
+						db.DBLogin(id, pw, "1");	//교수*/
 				}
 				else {
 					innerDB.onDestroy();

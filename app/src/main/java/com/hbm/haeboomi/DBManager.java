@@ -438,6 +438,7 @@ public class DBManager {
 		public static int ST_SCHEDULE = 5;
 	}
 	private class LoginAsync extends AsyncTask<String, Void, String> {
+		String number;
 		@Override
 		protected String doInBackground(String... params) {
 			String id = params[0];
@@ -470,6 +471,7 @@ public class DBManager {
 					sb.append(line + "\n");
 				}
 				result = sb.toString().trim();
+				number = id;
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (UnsupportedEncodingException e) {
@@ -484,8 +486,14 @@ public class DBManager {
 			if(activity instanceof LoginActivity)
 				((LoginActivity)activity).handlerRun(1);	//processDialog 닫기
 			if(result.equalsIgnoreCase("success")) {	//로그인 성공
-				activity.finish();
-				activity.startActivity(new Intent(activity, StudentMainActivity.class));
+				if(number != null & number.length() == 8) {
+					activity.finish();
+					activity.startActivity(new Intent(activity, StudentMainActivity.class));
+				}
+				else {
+					activity.finish();
+					activity.startActivity(new Intent(activity, ProfessorMainActivity.class));
+				}
 			}
 			else {
 				Toast.makeText(activity, "학번 혹은 비밀번호를 확인해 주세요", Toast.LENGTH_LONG).show();

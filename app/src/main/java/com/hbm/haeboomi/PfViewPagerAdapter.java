@@ -68,7 +68,7 @@ public class PfViewPagerAdapter extends PagerAdapter implements View.OnClickList
                 viewP.setCurrentItem(posi + 1);
                 break;
             case R.id.btnInOut:
-                activity.startActivity(new Intent(activity, CheckRTNum.class));
+                activity.startActivity(new Intent(activity, Check_state.class));
         }
     }
     @Override
