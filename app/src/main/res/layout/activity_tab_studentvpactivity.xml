@@ -21,23 +21,8 @@
             android:text="출석"
             android:textSize="40dp"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_width="100dp"
-            android:layout_height="100dp"/>
-        <Button
-            android:id="@+id/btnCenter"
-            android:text="지각"
-            android:textSize="40dp"
             android:layout_centerInParent="true"
-            android:layout_width="100dp"
-            android:layout_height="100dp"/>
-        <Button
-            android:id="@+id/btnRight"
-            android:text="결석"
-            android:textSize="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_width="100dp"
+            android:layout_width="300dp"
             android:layout_height="100dp"/>
 
     </RelativeLayout>
