@@ -27,6 +27,16 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 	private ArrayList<ContentValues> device_array;
 	private boolean check_arraysize = false;
 
+    ///////////////////////
+    private int temp;
+    public void newCalendar(int t) {
+        Log.d(TAG, "" + t);
+        Intent intent = new Intent(this, CalendarActivity.class);
+        temp = t;
+        intent.putExtra("random", temp);
+        startActivity(intent);
+    }
+/////////////////
     public void btInit() {
         if(btService == null)
             btService = new BTService(this, this);
@@ -133,11 +143,8 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
         });
 
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        Button btnCenter = (Button)findViewById(R.id.btnCenter);
-        Button btnRight = (Button)findViewById(R.id.btnRight);
 	    btnLeft.setOnClickListener(this);
-	    btnCenter.setOnClickListener(this);
-        btnRight.setOnClickListener(this);
+
     }
 
     @Override
@@ -151,14 +158,9 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.btnLeft:
-                startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class));
+                startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class).putExtra("random", temp));
                 break;
-            case R.id.btnCenter:
-                startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class));
-                break;
-            case R.id.btnRight:
-                startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class));
-                break;
+
         }
     }
 

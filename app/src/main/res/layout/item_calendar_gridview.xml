@@ -8,7 +8,8 @@
 
     android:orientation="vertical"
 
-    android:gravity="center">
+    android:gravity="center"
+    android:weightSum="1">
 
 
 
@@ -25,7 +26,6 @@
         android:textSize="20sp"
 
         />
-
 
 
 </LinearLayout>
