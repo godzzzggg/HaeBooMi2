@@ -27,7 +27,7 @@ public class MainSplash extends Activity {
 				db = new DBManager(MainSplash.this);
 				innerDB = new DBManager.innerDB(MainSplash.this);
 
-				String[] data = innerDB.getData("select id, password from user").split("!");
+				String[] data = innerDB.getData().split("!");
 				if(data.length != 1) {	//null인 경우를 제외
 					splash_text.setText("로그인 중입니다.");
 					id = data[0];

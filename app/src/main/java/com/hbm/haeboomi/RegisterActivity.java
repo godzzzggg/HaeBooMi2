@@ -122,9 +122,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 				mSpassFingerprint.startIdentifyWithDialog(this, listener, false);	//boolean값은 비밀번호 입력창 유무
 				break;
 			case R.id.btnOkR:
+				((EditText)findViewById(R.id.txtStuNumberR)).setText("22222");
+				((EditText)findViewById(R.id.txtPasswordR)).setText("1111");
+
 				String stuNum = ((EditText)findViewById(R.id.txtStuNumberR)).getText().toString();
 				String password = ((EditText)findViewById(R.id.txtPasswordR)).getText().toString();
 				EditText pwdCompare = (EditText)findViewById(R.id.txtPwdCompareR);
+
+				pwdCompare.setText("1111");
 
 				//사번 : 5자리, 학번 8자리
 				if (stuNum.length() == 5 || stuNum.length() == 8) {
@@ -135,17 +140,24 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 					else {
 						boolean reg;
 						if(stuNum.length() == 8)
-							reg = db.DBRegister(stuNum, password, passindex, 0);	//학생
+							reg = true;//db.DBRegister(stuNum, password, passindex, 0);	//학생
 						else
-							reg = db.DBRegister(stuNum, password, passindex, 1);	//교수
+							reg = true;//db.DBRegister(stuNum, password, passindex, 1);	//교수
 
 						if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
-							innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
-							Log.d("endhbm_Register", innerDB.getData("select * from user"));
+							//innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
 							innerDB.onDestroy();
-							db.putSchedule();
+							new Thread(new Runnable() {
+								@Override
+								public void run() {
+									db.putSchedule();
+								}
+							}).start();
 							finish();
-							startActivity(new Intent(this, StudentMainActivity.class));
+							if(stuNum.length() == 8)
+								startActivity(new Intent(this, StudentMainActivity.class));
+							else
+								startActivity(new Intent(this, ProfessorMainActivity.class));
 						}
 						else Toast.makeText(this, "이미 존재하는 학번/사번 입니다.", Toast.LENGTH_SHORT).show();
 					}

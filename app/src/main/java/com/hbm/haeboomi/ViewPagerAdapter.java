@@ -157,16 +157,22 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 				String[] beacon = db.getData(DBManager.GetTable.BEACON).split("!");
 				String bc_mac = beacon[0];
 				String bc_classno = beacon[1];
-				String id = innerDB.getData("select * from user").split("!")[0];
+				String id = innerDB.getData().split("!")[0];
 				String[] days = {"일", "월", "화", "수", "목", "금", "토"};
+				String[] days_en = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 				if(stu_main_activity.isEqual(bc_mac)) {
 					String[] now = db.nowTime();
-					int minute = Integer.parseInt(now[1].split(":")[1]);
 					int hour = Integer.parseInt(now[1].split(":")[0]);
+					int minute = Integer.parseInt(now[1].split(":")[1]);
 					if(minute != 0 && minute > 49) hour++;
 					String time = hour + ":00:00";
-					if(db.attendance(id, now[0], time, bc_classno)) {
+					int i = 0;
+					while(i < days_en.length)
+						if(days_en[i++].equalsIgnoreCase(now[2]))
+							break;
+
+					if(db.attendance(id, now[0], days[--i], time, bc_classno)) {
 						Log.d(TAG, "출석체크 완료");
 					}
 				}

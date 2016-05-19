@@ -83,7 +83,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 					else {
 						handlerRun(0);
 						innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
-						Log.d(TAG, innerDB.getData("select * from user"));
 						innerDB.onDestroy();
 						if(stuNum.length() == 8)
 							db.DBLogin(stuNum, password, "0");	//학생

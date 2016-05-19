@@ -33,7 +33,7 @@ public class Tab_TimeTableActivity extends Activity {
 		db = new DBManager(this);
 		DBManager.innerDB innerDB = new DBManager.innerDB(this);
 
-		String[] idpw = innerDB.getData("select * from user").split("!");
+		String[] idpw = innerDB.getData().split("!");
 		innerDB.onDestroy();
 
 		final String stuNum = idpw[0], password = idpw[1];
