@@ -6,10 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".Tab_TimeSettingActivity">
 
-    <TextView
-        android:text="알림 설정"
-        android:textSize="40dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/five"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:text="5분전 알람"
+        android:textSize="45dp"
+        android:layout_above="@+id/ten"
+        android:layout_alignStart="@+id/ten"
+        android:layout_marginBottom="70dp" />
+    <Button
+        android:id="@+id/ten"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:text="10분전 알람"
+        android:textSize="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="160dp" />
+
+
+
 </RelativeLayout>
