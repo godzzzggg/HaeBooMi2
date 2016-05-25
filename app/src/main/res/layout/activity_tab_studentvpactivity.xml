@@ -17,8 +17,8 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/btnLeft"
-            android:text="출석"
+            android:id="@+id/btnAttendanceStatus"
+            android:text="출결 현황"
             android:textSize="40dp"
             android:layout_centerVertical="true"
             android:layout_centerInParent="true"

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
@@ -35,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ public class DBManager {
 	private static final String TAG = "EndHBM_DBManager";
 	private Activity activity;
 
-	public static final String SERVER_ADDRESS = "http://59.30.254.247:8080/";
+	public static final String SERVER_ADDRESS = "http://hbmi.tk/";
 
 	//getData
 	private String[][] table = {
@@ -74,11 +76,25 @@ public class DBManager {
 	public boolean DBRegister(String id, String pw, int passindex, int division) {
 		String u = null;
 		String data = null;
+		int year = 0;
+
+		u = "http://was1.hallym.ac.kr:8084/Haksa_u/menu/main.jsp?UserID=" + id + "&Password=" + pw;
+		try {
+			Document doc = Jsoup.parse(new URL(u).openStream(), "EUC-KR", u);
+			doc.outputSettings().charset();
+			Elements elements = doc.select("td[style]");
+			String str = elements.iterator().next().text();
+			year = str.charAt(str.indexOf("(") + 1) - 48;   //학년을 구한다.
+		}catch(MalformedURLException e) {}
+		catch(IOException e) {}
+		catch(StringIndexOutOfBoundsException e) {
+			return false;
+		}
 
 		if(division == 0)
-			u = SERVER_ADDRESS + "student_insert.php?" + "st_id=" + id + "&st_pw=" + pw + "&st_pass=" + passindex;
+			u = SERVER_ADDRESS + "student_insert.php?st_id=" + id + "&st_pw=" + pw + "&st_pass=" + passindex + "&year=" + year;
 		else
-			u = SERVER_ADDRESS + "professor_insert.php?" + "pr_id=" + id + "&pr_pw=" + pw;
+			u = SERVER_ADDRESS + "professor_insert.php?pr_id=" + id + "&pr_pw=" + pw;
 		data = SuccessFail(u);
 
 		return Boolean.parseBoolean(data);
@@ -160,7 +176,7 @@ public class DBManager {
 		return url;
 	}
 
-	public boolean attendance(String id, String date, String day, String time, String c) {
+	public boolean attendance(String id, String date, String day, String time, String c, String result) {
 		try {
 			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + parsePHP(time) + "&class=" + c;
 			String data = SuccessFail(u);
@@ -173,7 +189,7 @@ public class DBManager {
 						schedule[j++] = temp[i];
 
 				u = SERVER_ADDRESS + "attendance_insert.php?" + "id=" + id + "&cname=" + schedule[0] + "&divide=" + schedule[1]
-						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + date;
+						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + date + "&result=" + result;
 
 				data = SuccessFail(u);
 				if(data.equalsIgnoreCase("success"))
@@ -204,6 +220,7 @@ public class DBManager {
 			URL url = new URL(u);
 			HttpURLConnection con = (HttpURLConnection)url.openConnection();
 			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "text/plain;charset=UTF-8");
 			con.setDoInput(true);
 			con.setDoOutput(true);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -224,8 +241,7 @@ public class DBManager {
 		try {
 			innerDB innerDB = new innerDB(activity);
 			String[] idpw = innerDB.getData().split("!");
-			//String u = "http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=" + idpw[0] + "&password=" + idpw[1];
-			String u = "http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=20115169&password=1234";
+			String u = "http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=" + idpw[0] + "&password=" + idpw[1];
 			String data = null, temp = SuccessFail(u);
 
 			if(temp != null && temp.length() > 60) {
@@ -279,58 +295,42 @@ public class DBManager {
 							ary[i][j] = String.valueOf(c);  //공백을 넣어주고 다음문자를 가리킴
 							sj++;
 						}
-						else {
-							ary[i][j] = s[si++].substring(sj);
+						else {          //공백이 아니면
+							ary[i][j] = s[si++].substring(sj);  //이후부터 모든 문자열을 넣어줌
 							sj = 0;
 						}
-						String[] subject = ary[i][j].split("/");
-						if(subject.length > 1) {
-							String day = null;
-							if(i%2 == 1) {  //1, 3
-								switch(j) {
-									case 1:
-										day = "월";
-										break;
-									case 2:
-										day = "화";
-										break;
-									case 3:
-										day = "수";
-										break;
-									case 4:
-										day = "목";
-										break;
-									case 5:
-										day = "금";
-										break;
-								}
+						String[] subject = ary[i][j].split("/");    //강의명/건물명/호수
+						if(subject.length > 1) {    //공백이 아닐 때
+							int day = 0;
+							if(i%2 == 1) {  //1, 3(2, 3, 5, 6, 8, 9, 11, 12교시)
+								day = j;    //1 ~ 5(월 ~ 금)
 							}
 							else {      //0, 2
-								if(i%3 == 1)
+								if(i%4 == 0)
 									switch(j) {
-										case 1:
-											day = "월";
+										case 1: //월
+											day = 1;
 											break;
 										case 2:
-										case 3:
-											day = "화";
+										case 3: //화
+											day = 2;
 											break;
-										case 4:
-											day = "수";
+										case 4: //수
+											day = 3;
 											break;
 										case 5:
-										case 6:
-											day = "목";
+										case 6: //목
+											day = 4;
 											break;
-										case 7:
-											day = "금";
+										case 7: //금
+											day = 5;
 											break;
 									}
-								else {
-									if (j == 0)
-										day = "화";
-									else if (j == 1)
-										day = "목";
+								else {  //화요일, 목요일 75분수업
+									if (j == 0)     //화요일
+										day = 2;
+									else if (j == 1)    //목요일
+										day = 4;
 								}
 							}
 							String time = null;
@@ -414,7 +414,7 @@ public class DBManager {
 									gubun = true;
 									break;
 							}
-							u = SERVER_ADDRESS + "schedule_insert.php?id=20115169&cname=" + parsePHP(subject[0]) + "&time=" + parsePHP(time)
+							u = SERVER_ADDRESS + "schedule_insert.php?id=" + idpw[0] + "&cname=" + parsePHP(subject[0]) + "&time=" + parsePHP(time)
 									+ "&classno=" + subject[2] + "&building=" + parsePHP(subject[1]) + "&day=" + day + "&gubun=" + (gubun?"1":"0"); //1 : 75분수업, 0 : 50분수업
 
 							if(SuccessFail(u).equalsIgnoreCase("fail")) {
@@ -543,13 +543,15 @@ public class DBManager {
 		}
 		@Override	//db가 새로 만들어질 때 1회 호출
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE user (id VARCHAR(8), password VARCHAR(15))");
+			db.execSQL("CREATE TABLE user (id VARCHAR(8), password VARCHAR(15), PRIMARY KEY(id, password))");
 		}
 		@Override	//이미 배포했던 db에 변경이 있을경우 호출/ 주로 버젼 변경시 호출됨
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 		//질의 실행
 		public void execSQL(String sql) {
-			db.execSQL(sql);
+			try {
+				db.execSQL(sql);
+			}catch(SQLiteConstraintException e) {}
 		}
 		public String getData() {
 			StringBuilder sb = new StringBuilder();

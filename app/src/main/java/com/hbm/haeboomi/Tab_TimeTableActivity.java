@@ -60,16 +60,9 @@ public class Tab_TimeTableActivity extends Activity {
 		new Thread() {
 			@Override
 			public void run() {
-				source = DownloadHtml("http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=" + stuNum + "&password=" + password);
-				//현상이가 오류났던부분 / 길이가 0일 경우에서 코드를 자르려해서 오류가 났기 때문에 조건하나넣음
-				if(source.length() != 0) {
-					//코드 정리
-					source = source.substring(23, source.length() - 2);
-					source = source.replace("\\n", " ");
-					source = source.replace("\\\"", "\"");
-					//web.loadData(source, "text/html; charset=UTF-8;", null); 코드를 핸들러에서 실행함
-					handler.sendMessage(handler.obtainMessage());
-				}
+				source = db.SuccessFail(DBManager.SERVER_ADDRESS + "timetable.php?id=" + stuNum);
+				//web.loadData(source, "text/html; charset=UTF-8;", null); 코드를 핸들러에서 실행함
+				handler.sendMessage(handler.obtainMessage());
 			}
 		}.start();
 	}

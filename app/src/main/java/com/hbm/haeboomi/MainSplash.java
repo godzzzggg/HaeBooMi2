@@ -34,6 +34,7 @@ public class MainSplash extends Activity {
 					pw = data[1];
 
 					innerDB.onDestroy();
+					finish();
 					startActivity(new Intent(MainSplash.this, LoginActivity.class));
 					/*
 					if(id.length() == 8)

@@ -8,14 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class Timetable_Helper extends SQLiteOpenHelper{
-	
+
 	private final String tag = "DB_helper.java";
 	private final static String db_name = "timetable.db";
 	private final String db_table_name = "schedule";
 	SQLiteDatabase db;
 	static String result;
-	
-	
+
+
 	public Timetable_Helper(Context context) {
 		super(context, db_name, null, 1);
 		db = this.getWritableDatabase();
@@ -37,8 +37,8 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 		db.execSQL("DROP TABLE IF EXISTS" + db_table_name);
 		onCreate(db);
 	}
-	
-	//DB�� �߰��ϴ� �Լ�
+
+	//DB에 추가하는 함수
 	public void add(int id, String a, String b){
 		ContentValues val = new ContentValues();
 		val.put("_id", id);
@@ -47,8 +47,8 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 		db.insert(db_table_name, null, val);
 		search_data();
 	}
-	
-	//DB�����ϴ� �Լ�
+
+	//DB수정하는 함수
 	public void update(long rawId, String a, String b){
 		ContentValues val = new ContentValues();
 		val.put("_id", rawId);
@@ -57,29 +57,29 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 		db.update(db_table_name, val, "_id = "+ rawId, null);
 		search_data();
 	}
-	
-	//DB�� ���ڵ� �����ϴ� �Լ�
+
+	//DB에 레코드 삭제하는 함수
 	public void delete(long rawId){
-		//DB�� �����ϰ����ϴ� ���̵��� �Ѱ� �޾Ƽ� ������ �˻� �� �ش� ���̵��� ���ڵ� ���� 
+		//DB에 삭제하고자하는 아이디값을 넘겨 받아서 쿼리로 검색 후 해당 아이디값의 레코드 삭제
 		db.delete(db_table_name, "_id = "+ rawId , null);
 		search_data();
-		
+
 	}
-	
-	//�α׻����� �����͸� Ȯ���ϰ��� ���� �Լ�
+
+	//로그상으로 데이터를 확인하고자 만든 함수
 	public void search_data(){
 		String sql = "select * from "+ db_table_name;
 		Cursor cur = db.rawQuery(sql, null);
 		cur.moveToFirst();
-	
-		//Ŀ���� ������ ������ ������ �����Ͱ� ���������� Ȯ���� ���־�� �Ѵ�.
-		//Ŀ���� �������� �������� �ƴҶ����� �ݺ��� ����
-		//(Ŀ���� �ݵ�� �ݺ����ȿ��� moveToNext�� ���־�� ���� �� ���ڵ带 ���� �� �ִ�.
+
+		//커서가 움직일 때에는 무조건 데이터가 마지막인지 확인을 해주어야 한다.
+		//커서가 데이터의 마지막이 아닐때까지 반복문 수행
+		//(커서를 반드시 반복문안에서 moveToNext를 해주어야 다음 행 레코드를 읽을 수 있다.
 		while(!cur.isAfterLast()){
-			//�ش� ���ڵ����� �� ���� ���� �����´�. 
-			//0�� ���� ���̵�, 1�� ���� ���Ǹ�, 2�� ���� ���ǽ�
-			//0���� int���̱� ������ �����ö��� cur.getInt(0); �̷��� �����´�.
-			//cursor.getInt(or getString)(����ȣ);
+			//해당 레코드행의 각 열의 값을 가져온다.
+			//0번 열은 아이디, 1번 열은 강의명, 2번 열은 강의실
+			//0번은 int값이기 때문에 가져올때는 cur.getInt(0); 이렇게 가져온다.
+			//cursor.getInt(or getString)(열번호);
 			String subject = cur.getString(1);
 			String classroom = cur.getString(2);
 			result = (subject + "   " + classroom);
@@ -88,23 +88,23 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 		}
 		cur.close();
 	}
-	
-	//DB�� ���ڵ���� ��ΰ������� �Լ�
+
+	//DB의 레코드들을 모두가져오는 함수
 	public Cursor getAll(){
-		//�ش� ���̺��� ��� ���ڵ� ����
+		//해당 테이블의 모든 레코드 리턴
 		return db.query(db_table_name, null, null,null,null,null,null);
 	}
-	
-	//�˻��ϰ����ϴ� ���̵����� ���̵� �ش��ϴ� ���ڵ� ��ȯ
+
+	//검색하고자하는 아이디값으로 아이디에 해당하는 레코드 반환
 	public Cursor getId(int id){
 		Cursor cur = db.query(db_table_name , null, "_id = " + id , null,null,null,null);
 		if(cur!=null&&cur.getCount() !=0)
 			cur.moveToNext();
 		return cur;
-		
+
 	}
-	
-	//���ڵ� ���� ������ ī��Ʈ ����
+
+	//레코드 행의 갯수를 카운트 해줌
 	public int getCounter(){
 		Cursor cur = null;
 		String sql = "select * from "+ db_table_name;
@@ -116,6 +116,5 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 		}
 		return counter;
 	}
-	
-}
 
+}

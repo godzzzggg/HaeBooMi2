@@ -53,7 +53,7 @@ public class CalendarActivity extends Activity  {
         DBM = new DBManager(this);
         /////////DB가져오기
         DBManager.innerDB innerDB = new DBManager.innerDB(this);
-        String id = innerDB.getData("select * from user").split("!")[0];
+        String id = innerDB.getData().split("!")[0];
         String str = DBM.getSelectData("*", "attendance", "id = " + id, DBManager.GetTable.ATTENDANCE);
         String[] Std_info = str.split("!");
 

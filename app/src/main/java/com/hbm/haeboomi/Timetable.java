@@ -75,7 +75,7 @@ public class Timetable extends Activity implements OnClickListener{
 		params_1.width=getLcdSizeWidth()/6;
 		params_1.height=getLcdSizeHeight()/14;
 		params_1.setMargins(1, 1, 1, 1);
-		params_1.gravity=1; //표가 뒤틀리는 것을 방지
+		params_1.gravity = Gravity.CENTER; //표가 뒤틀리는 것을 방지
 
 		@SuppressWarnings("deprecation")
 		LayoutParams params_2 = new LinearLayout.LayoutParams(

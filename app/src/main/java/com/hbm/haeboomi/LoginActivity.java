@@ -82,7 +82,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 						Toast.makeText(LoginActivity.this, "비밀번호를 4자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
 					else {
 						handlerRun(0);
-						//innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
+						innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
 						innerDB.onDestroy();
 						if(stuNum.length() == 8)
 							db.DBLogin(stuNum, password, "0");	//학생

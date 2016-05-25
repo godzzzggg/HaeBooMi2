@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -20,13 +21,19 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
     private BackPressCloseHandler bpch;
     private ViewPager vp;
-    private int COUNT = 3;
+	private ViewPagerAdapter sub_adapter;
+    private int COUNT;
+
+	private DBManager db;
 
     private BTService btService;
     private DeviceAdapter adapter;
 	private ArrayList<ContentValues> device_array;
+
 	private boolean check_arraysize = false;
 
+	private String[] schedule;
+	private Toast to = null;
     ///////////////////////
     private int temp=4;
     public void newCalendar(int t) {
@@ -97,53 +104,67 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
 
         vp = (ViewPager)findViewById(R.id.viewPager);
 
-	    int center = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % COUNT;  //2147483647의 중앙 / 2 - 1(%COUNT)
-        final ViewPagerAdapter sub_adapter = new ViewPagerAdapter(this, vp);
-        vp.setAdapter(sub_adapter);
-        vp.setCurrentItem(center);
+	    db = new DBManager(this);
+	    DBManager.innerDB innerDB = new DBManager.innerDB(this);
+
+	    final String[] idpw = innerDB.getData().split("!");
+	    innerDB.onDestroy();
+
+	    new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+			    Tab_StudentVPActivity.this.runOnUiThread(new Runnable() {
+				    @Override
+				    public void run() {
+					    String[] days = {"일", "월", "화", "수", "목", "금", "토"};
+					    String[] days_en = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+					    String[] now = db.nowTime();
+
+					    int i = 0;
+					    while(i < days_en.length)
+						    if(days_en[i++].equalsIgnoreCase(now[2]))
+							    break;
+					    try {
+						    String[] temp_schedule = db.getSelectData("cname, building, classno, time", "st_schedule", "id = " + idpw[0] + " and day = " + (--i), DBManager.GetTable.ST_SCHEDULE).split("!");
+						    schedule = new String[temp_schedule.length / 8];
+
+						    i = 0;
+						    for (int j = 0; i < temp_schedule.length; i++) {
+							    if (!temp_schedule[i].equalsIgnoreCase("null") && !temp_schedule[i].equalsIgnoreCase("\n")) {
+								    temp_schedule[i] = temp_schedule[i].replaceFirst("\\n", "");
+								    schedule[j++] = temp_schedule[i++] + "/" + temp_schedule[i++] + "/" + temp_schedule[i++] + "/" + temp_schedule[i];
+							    }
+						    }
+						    COUNT = schedule.length;
+					    }catch(ArrayIndexOutOfBoundsException e) {
+						    COUNT = 0;
+					    }
+					    sub_adapter = new ViewPagerAdapter(Tab_StudentVPActivity.this, vp);
+					    sub_adapter.setCount(COUNT);
+					    vp.setAdapter(sub_adapter);
+					    vp.setCurrentItem(0);
+				    }
+			    });
+		    }
+	    }).start();
 
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 	        @Override
 	        public void onPageSelected(int position) {
-		        Toast to = null;
-		        switch (sub_adapter.getPosition() % 3) {
-			        case 0:
-				        if (to != null) to.cancel();
-				        to = Toast.makeText(Tab_StudentVPActivity.this, "0", Toast.LENGTH_SHORT);
-				        to.show();
-				        break;
-			        case 1:
-				        if (to != null) to.cancel();
-				        to = Toast.makeText(Tab_StudentVPActivity.this, "1", Toast.LENGTH_SHORT);
-				        to.show();
-				        break;
-			        case 2:
-				        if (to != null) to.cancel();
-				        to = Toast.makeText(Tab_StudentVPActivity.this, "2", Toast.LENGTH_SHORT);
-				        to.show();
-				        break;
-		        }
-                /*
-                if (position < COUNT) {        //1번째 아이템에서 마지막 아이템으로 이동하면
-                    //vp.setCurrentItem(position + COUNT, false); //이동 애니메이션을 제거 해야 한다
-                }
-                else if (position >= COUNT * 2) {    //마지막 아이템에서 1번째 아이템으로 이동하면
-                    //vp.setCurrentItem(position - COUNT, false);
-                }*/
+		        //if (to != null) to.cancel();
+		        //to = Toast.makeText(Tab_StudentVPActivity.this, "" + vp.getCurrentItem() % COUNT, Toast.LENGTH_SHORT);
+		        //to.show();
 	        }
-
 	        @Override
-	        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-	        }
-
+	        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 	        @Override
-	        public void onPageScrollStateChanged(int state) {
-	        }
+	        public void onPageScrollStateChanged(int state) {}
         });
 
-        Button btnLeft = (Button) findViewById(R.id.btnLeft);
-	    btnLeft.setOnClickListener(this);
-
+        Button btnAttendanceStatus = (Button) findViewById(R.id.btnAttendanceStatus);
+	    if(COUNT == 0)
+		    btnAttendanceStatus.setVisibility(View.INVISIBLE);
+	    btnAttendanceStatus.setOnClickListener(this);
     }
 
     @Override
@@ -156,10 +177,9 @@ public class Tab_StudentVPActivity extends Activity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
-            case R.id.btnLeft:
-                startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class).putExtra("random", temp));
-                break;
-
+	        case R.id.btnAttendanceStatus:
+		        startActivity(new Intent(Tab_StudentVPActivity.this, CalendarActivity.class).putExtra("random", temp));
+		        break;
         }
     }
 
