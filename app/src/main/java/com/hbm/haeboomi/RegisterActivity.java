@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
@@ -191,7 +192,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 		handler[index].sendMessage(handler[index].obtainMessage());
 	}
 	public void handlerRun(int index, final String msg) {
-		handler[index] = new Handler() {
+		handler[index] = new Handler(Looper.getMainLooper()) {
 			@Override
 			public void handleMessage(Message m) {
 				super.handleMessage(m);

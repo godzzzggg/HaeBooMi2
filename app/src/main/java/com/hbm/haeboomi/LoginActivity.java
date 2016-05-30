@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -110,7 +111,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		handler[index].sendMessage(handler[index].obtainMessage());
 	}
 	public void handlerRun(int index, final String msg) {
-		handler[index] = new Handler() {
+		handler[index] = new Handler(Looper.getMainLooper()) {
 			@Override
 			public void handleMessage(Message m) {
 				super.handleMessage(m);
