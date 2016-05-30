@@ -78,17 +78,19 @@ public class DBManager {
 		String data = null;
 		int year = 0;
 
-		u = "http://was1.hallym.ac.kr:8084/Haksa_u/menu/main.jsp?UserID=" + id + "&Password=" + pw;
-		try {
-			Document doc = Jsoup.parse(new URL(u).openStream(), "EUC-KR", u);
-			doc.outputSettings().charset();
-			Elements elements = doc.select("td[style]");
-			String str = elements.iterator().next().text();
-			year = str.charAt(str.indexOf("(") + 1) - 48;   //학년을 구한다.
-		}catch(MalformedURLException e) {}
-		catch(IOException e) {}
-		catch(StringIndexOutOfBoundsException e) {
-			return false;
+		if(division == 0) {
+			u = "http://was1.hallym.ac.kr:8084/Haksa_u/menu/main.jsp?UserID=" + id + "&Password=" + pw;
+			try {
+				Document doc = Jsoup.parse(new URL(u).openStream(), "EUC-KR", u);
+				doc.outputSettings().charset();
+				Elements elements = doc.select("td[style]");
+				String str = elements.iterator().next().text();
+				year = str.charAt(str.indexOf("(") + 1) - 48;   //학년을 구한다.
+			} catch (MalformedURLException e) {
+			} catch (IOException e) {
+			} catch (StringIndexOutOfBoundsException e) {
+				return false;
+			}
 		}
 
 		if(division == 0)

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 
 public class CalendarActivity extends Activity {
+	private static String TAG = "EndHBM_CalendarActivity";
 	// 연/월 텍스트뷰
 	private TextView tvDate;
 	// 그리드뷰 어댑터
@@ -45,7 +46,7 @@ public class CalendarActivity extends Activity {
 
 		Intent intent = getIntent();
 		temp = intent.getExtras().getInt("random");
-		Log.d("m_CalendarActivity", "temp : " + temp);
+		Log.d(TAG, "temp : " + temp);
 		tvDate = (TextView)findViewById(R.id.tv_date);
 		gridView = (GridView)findViewById(R.id.gridview);
 		// 오늘에 날짜를 세팅 해준다.
@@ -61,7 +62,7 @@ public class CalendarActivity extends Activity {
 
 		for (int i = 0; i < Std_info.length; i++)
 			if (Std_info[i] != null)
-				Log.d("Student ", "String [" + i + "] : " + Std_info[i]);
+				Log.d(TAG, "String [" + i + "] : " + Std_info[i]);
 		for (int i = 0; i < day.length; i++)
 			for (int j = 0; j < day[i].length; j++)
 				day[i][j] = 4;
@@ -73,7 +74,7 @@ public class CalendarActivity extends Activity {
 			String[] day2 = Std_info[j].split("-");
 			int Mon = Integer.parseInt(day2[1]);
 			int Day = Integer.parseInt(day2[2]);
-			Log.d("Student ", "String [day] : " + day2[1]);
+			Log.d(TAG, "String [day] : " + day2[1]);
 			day[Mon - 1][Day - 1] = Integer.parseInt(Std_info[j - 2]);
 			j += 8;
 			cnt++;
@@ -261,8 +262,8 @@ public class CalendarActivity extends Activity {
 			String sToday = String.valueOf(today);
 			String sTomonth = String.valueOf(tomonth);
 
-			//Log.d("Calendar ", "position : " + position);
-			//Log.d("Calendar ", "sToday : " + getItem(position));
+			//Log.d(TAG, "position : " + position);
+			//Log.d(TAG, "sToday : " + getItem(position));
 
 			if (check == true) {
 				if (sToday.equals(getItem(position))) { //오늘 day 텍스트 컬러 변경

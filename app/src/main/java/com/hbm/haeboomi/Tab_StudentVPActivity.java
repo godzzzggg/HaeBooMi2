@@ -38,7 +38,7 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 	private String[] schedule;
 	private Toast to = null;
     ///////////////////////
-    private int temp=4;
+    private int temp = 4;
     public void newCalendar(int t) {
         Intent intent = new Intent(this, CalendarActivity.class);
         temp = t;

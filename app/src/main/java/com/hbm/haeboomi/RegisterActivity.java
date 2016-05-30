@@ -180,7 +180,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 							}
 							handlerRun(1);
 						}
-						else handlerRun(2, "학번 혹은 사번을 입력해주세요.");
+						else {
+							handlerRun(1);
+							handlerRun(2, "학번 혹은 사번을 입력해주세요.");
+						}
 					}
 				}).start();
 				break;
