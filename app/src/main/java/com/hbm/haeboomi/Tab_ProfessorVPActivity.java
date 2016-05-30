@@ -8,11 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.hbm.haeboomi.BackPressCloseHandler;
-import com.hbm.haeboomi.CalendarActivity;
-import com.hbm.haeboomi.R;
-import com.hbm.haeboomi.ViewPagerAdapter;
-
 public class Tab_ProfessorVPActivity extends Activity implements View.OnClickListener {
     private BackPressCloseHandler bpch;
     private ViewPager vp;

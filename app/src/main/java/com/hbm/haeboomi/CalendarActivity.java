@@ -39,11 +39,12 @@ public class CalendarActivity extends Activity  {
     boolean check = true;//그리드뷰 나누기 위한 변수
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    setContentView(R.layout.activity_calendar);
+
         Intent intent = getIntent();
         temp = intent.getExtras().getInt("random");
         Log.d("m_CalendarActivity", "temp : " + temp);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
         tvDate = (TextView)findViewById(R.id.tv_date);
         gridView = (GridView)findViewById(R.id.gridview);
         // 오늘에 날짜를 세팅 해준다.
@@ -254,6 +255,7 @@ public class CalendarActivity extends Activity  {
             holder.tvItemGridView.setText("" + getItem(position));
             //해당 날짜 텍스트 컬러,배경 변경
             mCal = Calendar.getInstance();
+
             //오늘 day 가져옴
             Integer today = mCal.get(Calendar.DAY_OF_MONTH);
             Integer tomonth = mCal.get(Calendar.MONTH);

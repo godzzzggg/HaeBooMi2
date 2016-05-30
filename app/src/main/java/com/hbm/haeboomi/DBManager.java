@@ -54,12 +54,12 @@ public class DBManager {
 
 	//getData
 	private String[][] table = {
-			{"class", "cname", "id", "result", "divide", "date"},
+			{"id", "cname", "result", "divide", "date", "day", "time", "chk_time"},
 			{"mac", "classno"},
 			{"id", "pw", "pro_name"},
 			{"id", "divide", "cname", "time", "day", "5075"},
 			{"id", "pw", "pass", "stu_name", "dept", "year"},
-			{"id", "cname", "pro_name", "divide", "time", "classno", "day", "5075"}
+			{"id", "day", "time", "cname", "pro_name", "divide", "classno", "building", "5075"}
 	};
 
 	public DBManager(Activity activity) {
@@ -145,7 +145,8 @@ public class DBManager {
 			for(int i = 0; i < stu.length(); i++) {
 				JSONObject c = stu.getJSONObject(i);
 				for(int j = 0; j < table[index].length; j++)
-					sb.append(c.getString(table[index][j]) + "!");
+					if(!c.isNull(table[index][j]))
+						sb.append(c.getString(table[index][j]) + "!");
 				sb.append("\n");
 			}
 			return sb.toString();
@@ -156,7 +157,7 @@ public class DBManager {
 	}
 	private String parsePHP(String str) {
 		String url = str;
-		String pattern = "= ,`:";
+		String pattern = "= ,`:'";
 		String word = null;
 		for(int i = 0; i < pattern.length(); i++) {
 			boolean change = false;
@@ -176,23 +177,20 @@ public class DBManager {
 		return url;
 	}
 
-	public boolean attendance(String id, String date, String day, String time, String c, String result) {
+	public boolean attendance(String id, String date, int day, String time, String c, String result, String chk_time) {
 		try {
 			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + parsePHP(time) + "&class=" + c;
-			String data = SuccessFail(u);
-			if(data.equalsIgnoreCase("success")) {
-				//select cname, divide from st_schedule where id = 20115169
-				String[] temp = getSelectData("cname, divide", "st_schedule", "id = " + id, GetTable.ST_SCHEDULE).split("!");
-				String[] schedule = new String[2];
+			if(SuccessFail(u).equalsIgnoreCase("success")) {    //시간표와 비교하여 해당시간에 강의가 있는지 확인
+				String[] temp = getSelectData("cname, divide", "st_schedule", "id=" + id + " and time='" + parsePHP(time) + "'" + " and day=" + day, GetTable.ST_SCHEDULE).split("!");
+				String[] schedule = new String[2];  //과목명과 분반정보를 얻어옴
 				for (int i = 0, j = 0; j < schedule.length && i < temp.length; i++)
 					if(temp[i] != null)
 						schedule[j++] = temp[i];
 
 				u = SERVER_ADDRESS + "attendance_insert.php?" + "id=" + id + "&cname=" + schedule[0] + "&divide=" + schedule[1]
-						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + date + "&result=" + result;
+						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + date + "&result=" + result + "&chk_time=" + chk_time;
 
-				data = SuccessFail(u);
-				if(data.equalsIgnoreCase("success"))
+				if(SuccessFail(u).equalsIgnoreCase("success"))
 					return true;
 				else
 					Log.e(TAG, "이미 출석 완료함");
@@ -548,10 +546,13 @@ public class DBManager {
 		@Override	//이미 배포했던 db에 변경이 있을경우 호출/ 주로 버젼 변경시 호출됨
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 		//질의 실행
-		public void execSQL(String sql) {
+		public boolean execSQL(String sql) {
 			try {
 				db.execSQL(sql);
-			}catch(SQLiteConstraintException e) {}
+				return true;
+			}catch(SQLiteConstraintException e) {
+				return false;
+			}
 		}
 		public String getData() {
 			StringBuilder sb = new StringBuilder();
@@ -559,7 +560,7 @@ public class DBManager {
 
 			if(cs.getCount() > 0) {
 				while (cs.moveToNext()) {
-					sb.append(cs.getString(0) + "!" + cs.getString(1));
+					sb.append(cs.getString(0) + "!" + cs.getString(1) + "!");
 				}
 			}
 

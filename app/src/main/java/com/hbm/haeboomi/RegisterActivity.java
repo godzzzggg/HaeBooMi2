@@ -1,10 +1,13 @@
 package com.hbm.haeboomi;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +26,9 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 	private boolean isFeatureEnabled;
 	private int passindex = -1;
 
+	private ProgressDialog pd;
+	private Handler[] handler = new Handler[3];
+
 	//아래부터 DB
 	private DBManager db;
 	private DBManager.innerDB innerDB;
@@ -34,7 +40,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 				case SpassFingerprint.STATUS_AUTHENTIFICATION_SUCCESS:	//지문인식 성공
 					//passindex에 해당 지문의 index를 넣는다.
 					passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-					db.getData(DBManager.GetTable.BEACON);
 					break;
 				case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS:	//지문대신 비밀번호를 입력해서 통과
 					break;
@@ -50,19 +55,11 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 			}
 		}
 		@Override
-		public void onReady() {
-			// It is called when fingerprint identification is ready after
-			// startIdentify() is called.
-		}
+		public void onReady() { }
 		@Override
-		public void onStarted() {
-			// It is called when the user touches the fingerprint sensor after
-			// startIdentify() is called.
-		}
+		public void onStarted() { }
 		@Override
-		public void onCompleted() {
-			//It is called when identify request is completed.
-		}
+		public void onCompleted() { }
 	};
 	private void passInit() {
 		mSpass = new Spass();
@@ -100,6 +97,23 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 			StrictMode.setThreadPolicy(policy);
 		}
 
+		pd = new ProgressDialog(this);
+		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pd.setMessage("회원 가입 중입니다");
+
+		handler[0] = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				pd.show();
+			}
+		};
+		handler[1] = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				pd.dismiss();
+			}
+		};
+
 		db = new DBManager(this);
 		innerDB = new DBManager.innerDB(this);
 
@@ -122,50 +136,74 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 				mSpassFingerprint.startIdentifyWithDialog(this, listener, false);	//boolean값은 비밀번호 입력창 유무
 				break;
 			case R.id.btnOkR:
-				//((EditText)findViewById(R.id.txtStuNumberR)).setText("20115164");
-				//((EditText)findViewById(R.id.txtPasswordR)).setText("dldmsrn3");
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						handlerRun(0);
 
-				final String stuNum = ((EditText)findViewById(R.id.txtStuNumberR)).getText().toString();
-				final String password = ((EditText)findViewById(R.id.txtPasswordR)).getText().toString();
-				EditText pwdCompare = (EditText)findViewById(R.id.txtPwdCompareR);
+						String stuNum = ((EditText)findViewById(R.id.txtStuNumberR)).getText().toString();
+						String password = ((EditText)findViewById(R.id.txtPasswordR)).getText().toString();
+						String pwdCompare = ((EditText)findViewById(R.id.txtPwdCompareR)).getText().toString();
 
-				pwdCompare.setText(password);
+						//디버깅용
+						//stuNum = "20115169";
+						//password = pwdCompare = "1234";
 
-				//사번 : 5자리, 학번 8자리
-				if (stuNum.length() == 5 || stuNum.length() == 8) {
-					if (password.length() < 4)
-						Toast.makeText(this, "비밀번호를 4자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
-					else if (!password.equals(pwdCompare.getText().toString()))
-						Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
-					else {
-						boolean reg;
-						if(stuNum.length() == 8)
-							reg = db.DBRegister(stuNum, password, passindex, 0);	//학생
-						else
-							reg = db.DBRegister(stuNum, password, passindex, 1);	//교수
+						//사번 : 5자리, 학번 8자리
+						if (stuNum.length() == 5 || stuNum.length() == 8) {
+							if (password.length() < 4)
+								handlerRun(2, "비밀번호를 4자리 이상 입력해주세요.");
+							else if (!password.equals(pwdCompare))
+								handlerRun(2, "비밀번호가 일치하지 않습니다.");
+							else {
+								boolean reg;
+								if(stuNum.length() == 8)
+									reg = db.DBRegister(stuNum, password, passindex, 0);	//학생
+								else
+									reg = db.DBRegister(stuNum, password, passindex, 1);	//교수
 
-						if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
-							innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
-							innerDB.onDestroy();
+								if(reg) {   //가입에 성공하면(DB에 존재하지 않으면)
+									if(innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')"))
+										innerDB.onDestroy();
 
-							new Thread(new Runnable() {
-								@Override
-								public void run() {
 									db.putSchedule();
+									handlerRun(1);
+
+									finish();
+									if(stuNum.length() == 8)
+										startActivity(new Intent(RegisterActivity.this, StudentMainActivity.class));
+									else
+										startActivity(new Intent(RegisterActivity.this, ProfessorMainActivity.class));
 								}
-							}).start();
-							finish();
-							if(stuNum.length() == 8)
-								startActivity(new Intent(this, StudentMainActivity.class));
-							else
-								startActivity(new Intent(this, ProfessorMainActivity.class));
+								else handlerRun(2, "학번/사번 및 비밀번호를 확인 해 주세요");
+							}
+							handlerRun(1);
 						}
-						else Toast.makeText(this, "학번/사번 및 비밀번호를 확인 해 주세요", Toast.LENGTH_SHORT).show();
+						else handlerRun(2, "학번 혹은 사번을 입력해주세요.");
 					}
-				}
-				else Toast.makeText(this, "학번 혹은 사번을 입력해주세요.", Toast.LENGTH_SHORT).show();
+				}).start();
 				break;
 		}
 	}
 
+	//핸들러의 내용을 실행해주는 메소드
+	public void handlerRun(int index) {
+		handler[index].sendMessage(handler[index].obtainMessage());
+	}
+	public void handlerRun(int index, final String msg) {
+		handler[index] = new Handler() {
+			@Override
+			public void handleMessage(Message m) {
+				super.handleMessage(m);
+				Toast.makeText(RegisterActivity.this, msg, Toast.LENGTH_SHORT).show();
+			}
+		};
+		handler[index].sendMessage(handler[index].obtainMessage());
+	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		startActivity(new Intent(this, LoginActivity.class));
+	}
 }

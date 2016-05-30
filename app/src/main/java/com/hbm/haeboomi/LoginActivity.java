@@ -18,12 +18,10 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements View.OnClickListener {
 	private final String TAG = "EndHBM_LoginActivity";
 	private ProgressDialog pd;
-	private Handler[] handler = new Handler[2];
+	private Handler[] handler = new Handler[3];
 	private DBManager db;
 	private DBManager.innerDB innerDB;
 
-	private String[] data;
-	private String id, pw;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,30 +71,52 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 				startActivity(new Intent(getBaseContext(), RegisterActivity.class));
 				break;
 			case R.id.btnLoginL:
-				String stuNum = ((EditText)findViewById(R.id.txtStuNumberL)).getText().toString();
-				String password = ((EditText)findViewById(R.id.txtPasswordL)).getText().toString();
-
-				//사번 : 5자리 / 학번 8자리
-				if (stuNum.length() == 5 || stuNum.length() == 8) {
-					if (password.length() < 4)
-						Toast.makeText(LoginActivity.this, "비밀번호를 4자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
-					else {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
 						handlerRun(0);
-						innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')");
-						innerDB.onDestroy();
-						if(stuNum.length() == 8)
-							db.DBLogin(stuNum, password, "0");	//학생
-						else
-							db.DBLogin(stuNum, password, "1");	//교수
+						String stuNum = ((EditText)findViewById(R.id.txtStuNumberL)).getText().toString();
+						String password = ((EditText)findViewById(R.id.txtPasswordL)).getText().toString();
+
+						//디버깅용
+						//stuNum = "20115169";
+						//password = "1234";
+
+						//사번 : 5자리 / 학번 8자리
+						if (stuNum.length() == 5 || stuNum.length() == 8) {
+							if (password.length() < 4)
+								handlerRun(2, "비밀번호를 4자리 이상 입력해주세요.");
+							else {
+								if(innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')"))
+									innerDB.onDestroy();
+								db.putSchedule();
+								if(stuNum.length() == 8)
+									db.DBLogin(stuNum, password, "0");	//학생
+								else
+									db.DBLogin(stuNum, password, "1");	//교수
+							}
+						}
+						else handlerRun(2, "학번 혹은 사번을 입력해주세요.");
+						handlerRun(1);
+
 					}
-				}
-				else Toast.makeText(LoginActivity.this, "학번 혹은 사번을 입력해주세요.", Toast.LENGTH_SHORT).show();
+				}).start();
 				break;
 		}
 	}
 
 	//핸들러의 내용을 실행해주는 메소드
 	public void handlerRun(int index) {
+		handler[index].sendMessage(handler[index].obtainMessage());
+	}
+	public void handlerRun(int index, final String msg) {
+		handler[index] = new Handler() {
+			@Override
+			public void handleMessage(Message m) {
+				super.handleMessage(m);
+				Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+			}
+		};
 		handler[index].sendMessage(handler[index].obtainMessage());
 	}
 }
