@@ -7,16 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class Timetable_Helper extends SQLiteOpenHelper{
+public class pfTimetable_Helper extends SQLiteOpenHelper{
+	private final String TAG = "EndHBM_pfTT_Helper";
 
-	private final String tag = "DB_helper.java";
 	private final static String db_name = "timetable.db";
 	private final String db_table_name = "schedule";
 	SQLiteDatabase db;
 	static String result;
 
 
-	public Timetable_Helper(Context context) {
+	public pfTimetable_Helper(Context context) {
 		super(context, db_name, null, 1);
 		db = this.getWritableDatabase();
 	}
@@ -83,7 +83,7 @@ public class Timetable_Helper extends SQLiteOpenHelper{
 			String subject = cur.getString(1);
 			String classroom = cur.getString(2);
 			result = (subject + "   " + classroom);
-			Log.i(tag, result);
+			Log.d(TAG, result);
 			cur.moveToNext();
 		}
 		cur.close();

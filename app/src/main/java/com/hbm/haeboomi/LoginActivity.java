@@ -88,8 +88,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 							if (password.length() < 4)
 								handlerRun(2, "비밀번호를 4자리 이상 입력해주세요.");
 							else {
-								if(innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')"))
-									innerDB.onDestroy();
 								db.putSchedule();
 								if(stuNum.length() == 8)
 									db.DBLogin(stuNum, password, "0");	//학생
@@ -99,13 +97,22 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 						}
 						else handlerRun(2, "학번 혹은 사번을 입력해주세요.");
 						handlerRun(1);
-
 					}
 				}).start();
 				break;
 		}
 	}
 
+	public void saveInfo(String stuNum, String password) {
+		if(innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')"))
+			destroyDB();
+	}
+	private void destroyDB() {
+		if(innerDB != null) {
+			innerDB.onDestroy();
+			innerDB = null;
+		}
+	}
 	//핸들러의 내용을 실행해주는 메소드
 	public void handlerRun(int index) {
 		handler[index].sendMessage(handler[index].obtainMessage());

@@ -36,7 +36,7 @@ public class Tab_TimeTableActivity extends Activity {
 		String[] idpw = innerDB.getData().split("!");
 		innerDB.onDestroy();
 
-		final String stuNum = idpw[0], password = idpw[1];
+		final String stuNum = idpw[0];
 
 		//UI를 건드리는 코드는 스레드 내부가 아닌 핸들러로 처리해야 한다.
 		handler = new Handler(){
@@ -70,30 +70,5 @@ public class Tab_TimeTableActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		bpch.onBackPressed();
-	}
-
-	//해당 URL로 text/html 형태의 코드를 얻음
-	String DownloadHtml(String addr) {
-		StringBuilder html = new StringBuilder();
-		try {
-			URL url = new URL(addr);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			if (conn != null) {
-				conn.setConnectTimeout(10000);
-				conn.setUseCaches(false);
-				if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-					while(true) {
-						String line = br.readLine();
-						if (line == null) break;
-						html.append(line + '\n');
-					}
-					br.close();
-				}
-				conn.disconnect();
-			}
-		} catch (Exception ex) {}
-
-		return html.toString();
 	}
 }

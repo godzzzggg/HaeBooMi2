@@ -33,7 +33,7 @@
         </activity>
         <activity android:name=".MainSplash" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
         <activity android:name=".Tab_ProfessorVPActivity" />
-        <activity android:name=".Timetable" />
+        <activity android:name=".pfTimetable" />
         <activity android:name=".Tab_ClassSettingActivity" />
         <activity android:name=".CheckATNum" />
         <activity android:name=".CheckLTNum" />

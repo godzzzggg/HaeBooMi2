@@ -1,6 +1,5 @@
 package com.hbm.haeboomi;
 
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,9 +8,6 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.hbm.haeboomi.R;
-import com.hbm.haeboomi.Tab_TimeSettingActivity;
-
 public class ProfessorMainActivity extends TabActivity {
 
     @Override
@@ -19,7 +15,7 @@ public class ProfessorMainActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor_main);
 
-        Class[] classes = {Tab_ProfessorVPActivity.class, Tab_ClassSettingActivity.class, Timetable.class, Tab_TimeSettingActivity.class};
+        Class[] classes = {Tab_ProfessorVPActivity.class, Tab_ClassSettingActivity.class, pfTimetable.class, Tab_TimeSettingActivity.class};
         String[] str = {"강의", "강의 설정", "시간표", "강의 알림"};
 
         Intent intent = getIntent();

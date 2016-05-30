@@ -436,7 +436,8 @@ public class DBManager {
 		public static int ST_SCHEDULE = 5;
 	}
 	private class LoginAsync extends AsyncTask<String, Void, String> {
-		String number;
+		private String stuNum;
+		private String password;
 		@Override
 		protected String doInBackground(String... params) {
 			String id = params[0];
@@ -469,7 +470,8 @@ public class DBManager {
 					sb.append(line + "\n");
 				}
 				result = sb.toString().trim();
-				number = id;
+				stuNum = id;
+				password = pw;
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (UnsupportedEncodingException e) {
@@ -481,10 +483,12 @@ public class DBManager {
 		}
 		@Override
 		protected void onPostExecute(String result) {
-			if(activity instanceof LoginActivity)
+			if(activity instanceof LoginActivity)   //형변환이 가능하면
 				((LoginActivity)activity).handlerRun(1);	//processDialog 닫기
 			if(result.equalsIgnoreCase("success")) {	//로그인 성공
-				if(number != null & number.length() == 8) {
+				if(activity instanceof LoginActivity)   //형변환이 가능하면
+					((LoginActivity)activity).saveInfo(stuNum, password);
+				if(stuNum != null & stuNum.length() == 8) {
 					activity.finish();
 					activity.startActivity(new Intent(activity, StudentMainActivity.class));
 				}
