@@ -54,7 +54,7 @@ public class DBManager {
 
 	//getData
 	private String[][] table = {
-			{"id", "cname", "result", "divide", "date", "day", "time", "chk_time"},
+			{"id", "cname", "rst", "divide", "date", "day", "time", "chk_time"},
 			{"mac", "classno"},
 			{"id", "pw", "pro_name"},
 			{"id", "divide", "cname", "time", "day", "5075"},
