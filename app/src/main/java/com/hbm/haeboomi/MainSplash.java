@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class MainSplash extends Activity {
 	private DBManager db;
 	private DBManager.innerDB innerDB;
+	public static boolean DEBUG_MODE = false;
 
 	private String id, pw;
 
@@ -28,19 +29,22 @@ public class MainSplash extends Activity {
 				innerDB = new DBManager.innerDB(MainSplash.this);
 
 				String[] data = innerDB.getData().split("!");
-				if(data.length != 1) {	//null인 경우를 제외
+				if(data.length != 1) {    //null인 경우를 제외
 					splash_text.setText("로그인 중입니다.");
 					id = data[0];
 					pw = data[1];
 
 					innerDB.onDestroy();
-					finish();
-					startActivity(new Intent(MainSplash.this, LoginActivity.class));
-					/*
-					if(id.length() == 8)
-						db.DBLogin(id, pw, "0");	//학생
-					else
-						db.DBLogin(id, pw, "1");	//교수*/
+					if (DEBUG_MODE) {
+						finish();
+						startActivity(new Intent(MainSplash.this, LoginActivity.class));
+					}
+					else {
+						if (id.length() == 8)
+							db.DBLogin(id, pw, "0");    //학생
+						else
+							db.DBLogin(id, pw, "1");    //교수
+					}
 				}
 				else {
 					innerDB.onDestroy();
@@ -49,6 +53,6 @@ public class MainSplash extends Activity {
 				}
 			}
 		};
-		handler.sendEmptyMessageDelayed(0, 1000);
+		handler.sendEmptyMessageDelayed(0, 1000);   //1000ms( == 1s) 후에 핸들러 메세지를 보냄
 	}
 }

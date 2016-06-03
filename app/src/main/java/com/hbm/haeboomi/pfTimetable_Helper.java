@@ -1,36 +1,41 @@
 package com.hbm.haeboomi;
 
+import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class pfTimetable_Helper extends SQLiteOpenHelper{
+public class pfTimetable_Helper extends SQLiteOpenHelper {
 	private final String TAG = "EndHBM_pfTT_Helper";
 
 	private final static String db_name = "timetable.db";
 	private final String db_table_name = "schedule";
-	SQLiteDatabase db;
-	static String result;
+	private SQLiteDatabase scheduleDB;
+	private DBManager db;
+	private DBManager.innerDB innerDB;
+	private String[] idpw;
 
-
-	public pfTimetable_Helper(Context context) {
-		super(context, db_name, null, 1);
-		db = this.getWritableDatabase();
+	public pfTimetable_Helper(Activity activity) {
+		super(activity, db_name, null, 1);
+		scheduleDB = this.getWritableDatabase();
+		db = new DBManager(activity);
+		innerDB = new DBManager.innerDB(activity);
+		idpw = innerDB.getData().split("!");
+		syncDB();
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		String sql = "create table if not exists "+ db_table_name + "("
+		String sql = "create table if not exists " + db_table_name + "("
 				+ " _id integer PRIMARY KEY ,"
-				+ " subject text, "
-				+ " classroom text)";
+				+ " cname text, "
+				+ " classno text, "
+				+ " divide text)";
 		db.execSQL(sql);
 	}
-
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
@@ -38,83 +43,94 @@ public class pfTimetable_Helper extends SQLiteOpenHelper{
 		onCreate(db);
 	}
 
+	public void onClose() {
+		this.close();
+		innerDB.onDestroy();
+	}
+
 	//DB에 추가하는 함수
-	public void add(int id, String a, String b){
+	public void add(int id, String cname, String classno, String divide) {
 		ContentValues val = new ContentValues();
 		val.put("_id", id);
-		val.put("subject", a);
-		val.put("classroom", b);
-		db.insert(db_table_name, null, val);
-		search_data();
+		val.put("cname", cname);
+		val.put("classno", classno);
+		val.put("divide", divide);
+		scheduleDB.insert(db_table_name, null, val);
+
+		int time = id / 5 + 9;    //9 ~ 20
+		int day = id % 5 + 1;     //1 ~ 5
+		db.putSchedule(day, time < 10? "0" : "" + time + ":00:00", cname, classno, divide); //내부DB에 저장된 시간표를 외부 DB에 추가
 	}
 
 	//DB수정하는 함수
-	public void update(long rawId, String a, String b){
+	public void update(int id, String cname, String classno, String divide) {
 		ContentValues val = new ContentValues();
-		val.put("_id", rawId);
-		val.put("subject", a);
-		val.put("classroom", b);
-		db.update(db_table_name, val, "_id = "+ rawId, null);
-		search_data();
+		val.put("_id", id);
+		val.put("cname", cname);
+		val.put("classno", classno);
+		val.put("divide", divide);
+		scheduleDB.update(db_table_name, val, "_id = " + id, null);
+
+		int time = id / 5 + 9;    //9 ~ 20
+		int day = id % 5 + 1;     //1 ~ 5
+		if(db.delete("id = " + idpw[0] + " and `time` = '" + (time < 10 ? "0" : "") + time + ":00:00'" + " and day = " + day, DBManager.GetTable.PRO_SCHEDULE))
+			db.putSchedule(day, time < 10? "0" : "" + time + ":00:00", cname, classno, divide); //내부DB에 저장된 시간표를 외부 DB에 추가
 	}
 
 	//DB에 레코드 삭제하는 함수
-	public void delete(long rawId){
+	public void delete(int id) {
 		//DB에 삭제하고자하는 아이디값을 넘겨 받아서 쿼리로 검색 후 해당 아이디값의 레코드 삭제
-		db.delete(db_table_name, "_id = "+ rawId , null);
-		search_data();
+		scheduleDB.delete(db_table_name, "_id = " + id, null);
 
+		int time = id / 5 + 9;    //9 ~ 20
+		int day = id % 5 + 1;     //1 ~ 5
+		db.delete("id = " + idpw[0] + " and `time` = '" + (time < 10? "0" : "") + time + ":00:00'" + " and day = " + day, DBManager.GetTable.PRO_SCHEDULE);
 	}
 
-	//로그상으로 데이터를 확인하고자 만든 함수
-	public void search_data(){
-		String sql = "select * from "+ db_table_name;
-		Cursor cur = db.rawQuery(sql, null);
-		cur.moveToFirst();
+	private void syncDB() {
+		String[] schedules = db.getSelectData("*", "pro_schedule", "id = " + idpw[0], DBManager.GetTable.PRO_SCHEDULE).split("\n");
+		if(schedules[0].equals("")) schedules = new String[0];
+		Cursor cur = getAll();
 
-		//커서가 움직일 때에는 무조건 데이터가 마지막인지 확인을 해주어야 한다.
-		//커서가 데이터의 마지막이 아닐때까지 반복문 수행
-		//(커서를 반드시 반복문안에서 moveToNext를 해주어야 다음 행 레코드를 읽을 수 있다.
-		while(!cur.isAfterLast()){
-			//해당 레코드행의 각 열의 값을 가져온다.
-			//0번 열은 아이디, 1번 열은 강의명, 2번 열은 강의실
-			//0번은 int값이기 때문에 가져올때는 cur.getInt(0); 이렇게 가져온다.
-			//cursor.getInt(or getString)(열번호);
-			String subject = cur.getString(1);
-			String classroom = cur.getString(2);
-			result = (subject + "   " + classroom);
-			Log.d(TAG, result);
-			cur.moveToNext();
+		int gap = schedules.length - cur.getCount();
+		if(gap < 0) {   //내부 DB에 있는 데이터가 더 많다. (내부DB에 저장된 시간표를 DB에 추가시켜야함)
+			if(cur != null) {
+				cur.moveToFirst();  //커서를 첫번째로 옮김
+				while(!cur.isAfterLast()) { //마지막 커서가 아니면 루프 실행
+					int position = cur.getInt(0);
+					String cname = cur.getString(1);
+					String classno = cur.getString(2);
+					String divide = cur.getString(3);
+					int time = position / 5 + 9;    //9 ~ 20
+					int day = position % 5 + 1;     //1 ~ 5
+
+					db.putSchedule(day, time < 10? "0" : "" + time + ":00:00", cname, classno, divide); //내부DB에 저장된 시간표를 외부 DB에 추가
+					cur.moveToNext();   //다음 커서로 이동
+				}
+			}
 		}
-		cur.close();
+		else if(gap > 0) {  //DB에 있는 데이터가 더 많다. (내부DB에 추가시켜야함)
+			for(int i = 0; i < schedules.length; i++) {
+				String[] schedule = schedules[i].split("!");
+
+				int day = Integer.parseInt(schedule[1]);
+				int time = Integer.parseInt(schedule[2].split(":")[0]);
+
+				int id = (time - 9) * 5 + (day - 1);
+
+				ContentValues val = new ContentValues();
+				val.put("_id", id);
+				val.put("cname", schedule[3]);
+				val.put("classno", schedule[5]);
+				val.put("divide", schedule[4]);
+				scheduleDB.insert(db_table_name, null, val);
+			}
+		}
 	}
 
 	//DB의 레코드들을 모두가져오는 함수
-	public Cursor getAll(){
+	public Cursor getAll() {
 		//해당 테이블의 모든 레코드 리턴
-		return db.query(db_table_name, null, null,null,null,null,null);
+		return scheduleDB.query(db_table_name, null, null, null, null, null, null);
 	}
-
-	//검색하고자하는 아이디값으로 아이디에 해당하는 레코드 반환
-	public Cursor getId(int id){
-		Cursor cur = db.query(db_table_name , null, "_id = " + id , null,null,null,null);
-		if(cur!=null&&cur.getCount() !=0)
-			cur.moveToNext();
-		return cur;
-
-	}
-
-	//레코드 행의 갯수를 카운트 해줌
-	public int getCounter(){
-		Cursor cur = null;
-		String sql = "select * from "+ db_table_name;
-		cur = db.rawQuery(sql, null);
-		int counter = 0;
-		while(!cur.isAfterLast()){
-			cur.moveToNext();
-			counter++;
-		}
-		return counter;
-	}
-
 }

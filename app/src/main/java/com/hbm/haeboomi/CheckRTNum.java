@@ -38,7 +38,7 @@ public class CheckRTNum extends Activity {
         setContentView(R.layout.activity_check_rtnum);
         list = (ListView) findViewById(R.id.listView);
         personList = new ArrayList<HashMap<String,String>>();
-        getData("http://59.30.254.247:8080/miss_data.php");
+        getData(DBManager.SERVER_ADDRESS + "miss_data.php");
     }
 
     protected void showList(){

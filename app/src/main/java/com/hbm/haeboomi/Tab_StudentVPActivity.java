@@ -36,7 +36,6 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 	private boolean check_arraysize = false;
 
 	private String[] schedule;
-	private Toast to = null;
     ///////////////////////
     private int temp = 4;
     public void newCalendar(int t) {
@@ -46,18 +45,18 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
         startActivity(intent);
     }
 /////////////////
-    public void btInit() {
+    public void btInit() {  //블루투스 초기화
         if(btService == null)
             btService = new BTService(this, this);
 	    else if(btService.isNull()) {
 	        btService = null;
 	        btService = new BTService(this, this);
         }
-	    device_array = new ArrayList<ContentValues>();
+	    device_array = new ArrayList<>();
         adapter = new DeviceAdapter(this, device_array);
     }
 
-    public boolean btStart() {
+    public boolean btStart() {  //블루투스 실행, 켜기, 검색
 	    boolean returnVal = false;
         if (!btService.isScanning()) {
             try {
@@ -71,7 +70,7 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
             }
             else {
                 Log.e(TAG, "스캔 실패... 블루투스가 꺼져있는지 확인");
-	            btStart();
+	            btStart();  //블루투스가 미처 다 켜지지 않았을 때 이 메소드를 다시 부른다.
             }
         }
         else {
@@ -84,12 +83,12 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 		return check_arraysize;
 	}
 
-    public void UpdateList(ArrayList<ContentValues> arrayList) {
+    public void UpdateList(ArrayList<ContentValues> arrayList) {    //비콘 목록 업데이트
         adapter.UpdateList(arrayList);
 	    if(arrayList.size() != 0) check_arraysize = true;
     }
 
-    public boolean isEqual(String mac) {
+    public boolean isEqual(String mac) {    //검색되는 비콘들중에 현재 강의실에 설치된 비콘을 찾는 메소드
         boolean equal = false;
 
         for(ContentValues content : device_array)
@@ -110,10 +109,10 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 	    db = new DBManager(this);
 	    DBManager.innerDB innerDB = new DBManager.innerDB(this);
 
-	    final String[] idpw = innerDB.getData().split("!");
+	    final String[] idpw = innerDB.getData().split("!"); //내부DB에 저장된 아이디, 패스워드를 가져옴
 	    innerDB.onDestroy();
 
-	    final Button btnAttendanceStatus = (Button)findViewById(R.id.btnAttendanceStatus);
+	    final Button btnAttendanceStatus = (Button)findViewById(R.id.btnAttendanceStatus);  //출결 현황 버튼
 	    btnAttendanceStatus.setOnClickListener(this);
 
 	    new Thread(new Runnable() {
@@ -151,15 +150,6 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 			    });
 		    }
 	    }).start();
-
-        vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-	        @Override
-	        public void onPageSelected(int position) {}
-	        @Override
-	        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-	        @Override
-	        public void onPageScrollStateChanged(int state) {}
-        });
     }
 
 	public void setPosition() {

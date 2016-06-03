@@ -38,7 +38,7 @@ public class CheckLTNum extends Activity {
         setContentView(R.layout.activity_check_ltnum);
         list = (ListView) findViewById(R.id.listView);
         personList = new ArrayList<HashMap<String,String>>();
-        getData("http://59.30.254.247:8080/later_data.php");
+        getData(DBManager.SERVER_ADDRESS + "later_data.php");
     }
 
     protected void showList(){

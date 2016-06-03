@@ -15,7 +15,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Light.NoTitleBar">
+        android:theme="@style/AppTheme">
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".StudentMainActivity"/>
@@ -34,7 +34,6 @@
         <activity android:name=".MainSplash" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
         <activity android:name=".Tab_ProfessorVPActivity" />
         <activity android:name=".pfTimetable" />
-        <activity android:name=".Tab_ClassSettingActivity" />
         <activity android:name=".Check_state" />
         <activity android:name=".CheckATNum" />
         <activity android:name=".CheckLTNum" />

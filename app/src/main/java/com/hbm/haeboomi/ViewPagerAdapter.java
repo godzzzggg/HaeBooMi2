@@ -41,6 +41,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 	private String[] attendance;
 	private int limit_min_late = 5;     //지각 시작
 	private int limit_max_late = 15;    //지각 끝, 이후부터는 결석처리
+	private String[] now;
 	private int hour;
 	private int minute;
 	private String date;
@@ -56,7 +57,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
                     stu_main_activity.btStart();
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
-                    String pass = db.getSelectData("pass", "student", "id = " + innerDB.getData().split("!")[0], DBManager.GetTable.STUDENT);
+                    String pass = db.getSelectData("pass", "student", "id = " + idpw[0], DBManager.GetTable.STUDENT);
 	                if(pass.equals(passindex)) {
 		                attendance("2");
 		                stu_main_activity.newCalendar((int)(Math.random() * 4));
@@ -113,6 +114,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 		}
 		COUNT = count;
 
+		now = db.nowTime();
 		Init();
 	}
 
@@ -188,26 +190,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 							return;
 						}
 						else {
-							new Thread(new Runnable() {
-								@Override
-								public void run() {
-									stu_main_activity.btInit();
-									stu_main_activity.runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											if (isFeatureEnabled) {
-												mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
-											}
-											else {
-												Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
-												v.setEnabled(false);
-												attendance("3");    //임시 출석
-											}
-											stu_main_activity.btStart();
-										}
-									});
-								}
-							}).start();
+							attendanceRun(v);
 						}
 					}
 				}
@@ -221,26 +204,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 							return;
 						}
 						else {
-							new Thread(new Runnable() {
-								@Override
-								public void run() {
-									stu_main_activity.btInit();
-									stu_main_activity.runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											if (isFeatureEnabled) {
-												mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
-											}
-											else {
-												Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
-												v.setEnabled(false);
-												attendance("3");    //임시 출석
-											}
-											stu_main_activity.btStart();
-										}
-									});
-								}
-							}).start();
+							attendanceRun(v);
 						}
 					}
 				}
@@ -248,6 +212,28 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 		}
 	}
 
+	private void attendanceRun(final View v) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				stu_main_activity.btInit();
+				stu_main_activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (isFeatureEnabled) {
+							mSpassFingerprint.startIdentifyWithDialog(stu_main_activity, listener, false);    //boolean값은 비밀번호 입력창 유무
+						}
+						else {
+							stu_main_activity.btStart();
+							Toast.makeText(stu_main_activity, "지문인식 미지원", Toast.LENGTH_SHORT).show();
+							v.setEnabled(false);
+							attendance("3");    //임시 출석
+						}
+					}
+				});
+			}
+		}).start();
+	}
 	private void passInit() {
 		mSpass = new Spass();
 
@@ -265,7 +251,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 		idpw = innerDB.getData().split("!");
 		innerDB.onDestroy();
 
-		String[] now = db.nowTime();
 		while(day < days_en.length)
 			if(days_en[day++].equalsIgnoreCase(now[2]))
 				break;
@@ -309,9 +294,8 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 
 			hour = Integer.parseInt(schedule[i].split("/")[3].split(":")[0]);
 			minute = Integer.parseInt(schedule[i].split("/")[3].split(":")[1]);
-			String[] now = db.nowTime()[1].split(":");
-			int nowh = Integer.parseInt(now[0]);
-			int nowm = Integer.parseInt(now[1]);
+			int nowh = Integer.parseInt(now[1].split(":")[0]);
+			int nowm = Integer.parseInt(now[1].split(":")[1]);
 
 			if(attendance != null && i < attendance.length) {   //출석체크를 완료해서 다시 어플을 켰을 때 출석체크 완료를 유지하기 위함
 				String[] temp = attendance[i].split("/");
@@ -375,7 +359,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 			public void run() {
 				String id = idpw[0];
 				String classno = schedule[i].split("/")[2];
-				String[] now = db.nowTime();
 				String[] temp = schedule[i].split("/")[3].split(":");
 				hour = Integer.parseInt(temp[0]);
 				minute = Integer.parseInt(temp[1]);
@@ -415,7 +398,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 					bc_mac = beacon[i].split("!")[0];
 					bc_classno = beacon[i].split("!")[1];
 					if (stu_main_activity.isEqual(bc_mac)) {
-						String[] now = db.nowTime();
 						int h = Integer.parseInt(now[1].split(":")[0]);
 						int m = Integer.parseInt(now[1].split(":")[1]);
 

@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -41,9 +42,9 @@ public class StudentMainActivity extends TabActivity {
         for(int i = 0; i < tabhost.getTabWidget().getChildCount(); i++) {
             tabhost.getTabWidget().getChildAt(i).getLayoutParams().height = 160;
             tabhost.getTabWidget().getChildAt(i).setBackgroundColor(getResources().getColor(R.color.hallymBlue));
-            RelativeLayout relLayout = (RelativeLayout)tabhost.getTabWidget().getChildAt(i);
+	        LinearLayout relLayout = (LinearLayout)tabhost.getTabWidget().getChildAt(i);
             TextView tv = (TextView)relLayout.getChildAt(1);
-            tv.setTextSize(25);
+            tv.setTextSize(15);
             tv.setTextColor(Color.WHITE);
         }
         //초기화면을 탭의 0번째 화면을 보여줌

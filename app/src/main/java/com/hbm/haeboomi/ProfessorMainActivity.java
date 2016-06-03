@@ -4,19 +4,20 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
 public class ProfessorMainActivity extends TabActivity {
-
+	public static int TAB_HEIGHT = 160;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor_main);
 
-        Class[] classes = {Tab_ProfessorVPActivity.class, Tab_ClassSettingActivity.class, pfTimetable.class, Tab_TimeSettingActivity.class};
-        String[] str = {"강의", "강의 설정", "시간표", "강의 알림"};
+        Class[] classes = {Tab_ProfessorVPActivity.class, pfTimetable.class, Tab_TimeSettingActivity.class};
+        String[] str = {"강의", "시간표", "강의 알림"};
 
         Intent intent = getIntent();
         String pfNum = intent.getStringExtra("professor_number");
@@ -39,9 +40,9 @@ public class ProfessorMainActivity extends TabActivity {
 
         //아래 for문은 탭의 크기, 색상 등을 지정
         for(int i = 0; i < tabhost.getTabWidget().getChildCount(); i++) {
-            tabhost.getTabWidget().getChildAt(i).getLayoutParams().height = 160;
+            tabhost.getTabWidget().getChildAt(i).getLayoutParams().height = TAB_HEIGHT;
             tabhost.getTabWidget().getChildAt(i).setBackgroundColor(getResources().getColor(R.color.hallymBlue));
-            RelativeLayout relLayout = (RelativeLayout)tabhost.getTabWidget().getChildAt(i);
+            LinearLayout relLayout = (LinearLayout)tabhost.getTabWidget().getChildAt(i);
             TextView tv = (TextView)relLayout.getChildAt(1);
             tv.setTextSize(25);
             tv.setTextColor(Color.WHITE);

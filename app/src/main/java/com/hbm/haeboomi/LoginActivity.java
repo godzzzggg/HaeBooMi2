@@ -3,7 +3,6 @@ package com.hbm.haeboomi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,9 +10,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
@@ -27,14 +24,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
-		
-		//배경색을 흰색으로 하려고 만든 객체
-		RelativeLayout mRelativeLayout = (RelativeLayout) findViewById(R.id.loginlayout);
-		mRelativeLayout.setBackgroundColor(Color.WHITE);
-
 		db = new DBManager(this);
 		innerDB = new DBManager.innerDB(this);
+
+		setContentView(R.layout.activity_login);
 
 		//각 버튼들을 객체와 연결
 		Button btnRegister = (Button) findViewById(R.id.btnRegisterL);
@@ -80,8 +73,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 						String password = ((EditText)findViewById(R.id.txtPasswordL)).getText().toString();
 
 						//디버깅용
-						//stuNum = "20115169";
-						//password = "1234";
+						if(MainSplash.DEBUG_MODE) {
+							String ip;
+							if((ip = innerDB.getData()).split("!").length >= 2) {
+								stuNum = ip.split("!")[0];
+								password = ip.split("!")[1];
+							}
+						}
 
 						//사번 : 5자리 / 학번 8자리
 						if (stuNum.length() == 5 || stuNum.length() == 8) {
@@ -104,6 +102,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	}
 
 	public void saveInfo(String stuNum, String password) {
+		//Thread에서 이 메소드를 호출하는데 가끔 innerDB가 Create되기 전에 메소드가 불리는 경우가 생긴다.
+		//innerDB은 null이 될 수 없기 때문에 초기화가 될 때까지 빈 루프를 돌려준다.
+		while(innerDB == null);
 		if(innerDB.execSQL("INSERT INTO user VALUES ('" + stuNum + "', '" + password + "')"))
 			destroyDB();
 	}

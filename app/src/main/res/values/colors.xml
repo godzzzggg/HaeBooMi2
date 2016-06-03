@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fontWhite">#FFFFFF</color>
+    <color name="fontWhite">#ffffff</color>
     <color name="fontHallym">#263d69</color>
     <color name="hallymBlue">#0066ac</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#40b1ff</color>
     <color name="calendarBlue">#21a4ff</color>
     <color name="calendarWhite">#ffffff</color>
     <color name="calendarSelect">#ff79f2</color>
     <color name="calendarBlack">#000000</color>
+    <color name="foreground_material_light">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="colorBackground">#ffffff</color>
 </resources>

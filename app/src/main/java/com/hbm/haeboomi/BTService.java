@@ -79,6 +79,8 @@ public class BTService implements ListenerBeaconScan{
 		return bc_Manager == null;
 	}
 	public boolean isScanning() {
+		if(bc_Manager == null)
+			return false;
 		return bc_Manager.isScanning();
 	}
 

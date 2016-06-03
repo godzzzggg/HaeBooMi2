@@ -10,15 +10,15 @@
     <TextView
         android:id="@+id/lblPfToday"
         android:text="Today"
-        android:textSize="40dp"
+        android:textSize="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/lblPfClassName"
         android:text="강의명"
-        android:textSize="50dp"
-        android:layout_marginTop="40dp"
+        android:textSize="40dp"
+        android:layout_marginTop="60dp"
         android:textAlignment="center"
         android:layout_below="@id/lblPfToday"
         android:layout_width="match_parent"

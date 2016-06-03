@@ -36,7 +36,7 @@ public class CalendarActivity extends Activity {
 	private int temp = 4;
 	private int day[][] = new int[12][31];
 	private int mon;
-	private DBManager DBM;
+	private DBManager db;
 	boolean check = true;//그리드뷰 나누기 위한 변수
 
 	@Override
@@ -53,11 +53,11 @@ public class CalendarActivity extends Activity {
 		long now = System.currentTimeMillis();
 		final Date date = new Date(now);
 
-		DBM = new DBManager(this);
+		db = new DBManager(this);
 		/////////DB가져오기
 		DBManager.innerDB innerDB = new DBManager.innerDB(this);
 		String id = innerDB.getData().split("!")[0];
-		String str = DBM.getSelectData("*", "attendance", "id = " + id, DBManager.GetTable.ATTENDANCE);
+		String str = db.getSelectData("*", "attendance", "id = " + id, DBManager.GetTable.ATTENDANCE);
 		String[] Std_info = str.split("!");
 
 		for (int i = 0; i < Std_info.length; i++)

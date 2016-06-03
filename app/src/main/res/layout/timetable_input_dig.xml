@@ -18,8 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="강 의 명  :"
-            android:textColor="#000000"
+            android:text="강 의 명 : "
             android:textSize="15dp" />
 
         <EditText
@@ -39,8 +38,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="강 의 실  :"
-            android:textColor="#000000"
+            android:text="강 의 실 : "
             android:textSize="15dp" />
 
         <EditText
@@ -61,8 +59,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="분     반  :"
-            android:textColor="#000000"
+            android:text="분     반 : "
             android:textSize="15dp" />
 
         <EditText

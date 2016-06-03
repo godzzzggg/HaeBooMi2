@@ -81,22 +81,11 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register);
 
-		//배경색을 흰색으로 하려고 만든 객체
-		RelativeLayout mRelativeLayout = (RelativeLayout)findViewById(R.id.registerlayout);
-		mRelativeLayout.setBackgroundColor(Color.WHITE);
-
 		//각 버튼, 입력한 값들을 처리하기위한 객체
 		Button btnPass = (Button)findViewById(R.id.btnPassR);
 		Button btnOk = (Button)findViewById(R.id.btnOkR);
 		btnPass.setOnClickListener(this);
 		btnOk.setOnClickListener(this);
-
-		//url.openStream() 메소드를 실행할 때 필요
-		//다음 문장이 없다면 NetworkOnMainThreadException 이 발생한다.
-		if(Build.VERSION.SDK_INT > 9){
-			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-			StrictMode.setThreadPolicy(policy);
-		}
 
 		pd = new ProgressDialog(this);
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -147,9 +136,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 						String pwdCompare = ((EditText)findViewById(R.id.txtPwdCompareR)).getText().toString();
 
 						//디버깅용
-						//stuNum = "20115169";
-						//password = pwdCompare = "1234";
-
+						if(MainSplash.DEBUG_MODE) {
+							stuNum = "20115169";
+							password = pwdCompare = "1234";
+						}
 						//사번 : 5자리, 학번 8자리
 						if (stuNum.length() == 5 || stuNum.length() == 8) {
 							if (password.length() < 4)
