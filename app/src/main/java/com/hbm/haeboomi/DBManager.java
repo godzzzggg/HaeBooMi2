@@ -68,6 +68,8 @@ public class DBManager {
 	public DBManager(Activity activity) {
 		super();
 		this.activity = activity;
+		idpw = new innerDB(activity).getData().split("!");
+		Log.d(TAG, idpw[0] + " " + idpw[1]);
 
 		//url.openStream() 메소드를 실행할 때 필요
 		//다음 문장이 없다면 NetworkOnMainThreadException 이 발생한다.
