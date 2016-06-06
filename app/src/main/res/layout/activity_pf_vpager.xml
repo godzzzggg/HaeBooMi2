@@ -58,16 +58,16 @@
 
     <Button
         android:id="@+id/btnPfPrev"
-        android:text="이전"
+        android:background="@drawable/btnprev"
         android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="150px"
+        android:layout_height="150px"/>
     <Button
         android:id="@+id/btnPfNext"
-        android:text="다음"
+        android:background="@drawable/btnnext"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="150px"
+        android:layout_height="150px"/>
 
 </RelativeLayout>

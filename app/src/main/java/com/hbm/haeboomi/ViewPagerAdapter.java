@@ -58,7 +58,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
                     //passindex에 해당 지문의 index를 넣는다.
                     passindex = mSpassFingerprint.getIdentifiedFingerprintIndex();
                     String pass = db.getSelectData("pass", "student", "id = " + idpw[0], DBManager.GetTable.STUDENT);
-	                if(pass.equals(passindex)) {
+	                if(pass.equals("" + passindex)) {
 		                attendance("2");
 		                stu_main_activity.newCalendar((int)(Math.random() * 4));
 	                }

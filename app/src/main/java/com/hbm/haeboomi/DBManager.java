@@ -54,7 +54,7 @@ public class DBManager {
 	private Activity activity;
 
 	public static final String SERVER_ADDRESS = "http://hbmi.tk/";
-
+	private String[] idpw;
 	//getData
 	private String[][] table = {
 			{"id", "cname", "rst", "divide", "date", "day", "time", "chk_time"},
@@ -236,7 +236,7 @@ public class DBManager {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				String id = new innerDB(activity).getData().split("!")[0];
+				String id = idpw[0];
 				String[] buildings = {"", "공학관 (성호관)", "대학본부.인문1관 (연암관)", "의학관",
 						"인문2관 (단재관)", "대학본부별관 (반계관)", "실험동물센터",
 						"자연과학관 (율곡관)", "생명과학관", "학생복지관 (김유정관)",
@@ -276,8 +276,6 @@ public class DBManager {
 	}
 	public void putSchedule() {
 		try {
-			innerDB innerDB = new innerDB(activity);
-			String[] idpw = innerDB.getData().split("!");
 			String u = "http://128.199.144.167:8080/AnalyzeApp/hallym/login?action=5&id=" + idpw[0] + "&password=" + idpw[1];
 			//한림대학교 어플에서 사용중인 주소를 사용함
 			String data = null, temp = SuccessFail(u);
@@ -398,8 +396,12 @@ public class DBManager {
 								case 0: if(j == 3 || j == 6) gubun = true; break;
 								case 2: gubun = true; break;
 							}
+
+							String classno = subject[2];
+							if(classno.split("-").length == 1) classno = classno.split("-")[0]; // 7103- 같이 -뒤에 아무것도 없는것들을 정리하기 위함
+
 							u = SERVER_ADDRESS + "schedule_insert.php?id=" + idpw[0] + "&cname=" + parsePHP(subject[0]) + "&time=" + parsePHP(time)
-									+ "&classno=" + subject[2] + "&building=" + parsePHP(subject[1]) + "&day=" + day + "&gubun=" + (gubun ? "1" : "0"); //1 : 75분수업, 0 : 50분수업
+									+ "&classno=" + classno + "&building=" + parsePHP(subject[1]) + "&day=" + day + "&gubun=" + (gubun ? "1" : "0"); //1 : 75분수업, 0 : 50분수업
 
 							if(SuccessFail(u).equalsIgnoreCase("fail")) {
 								Log.d(TAG, "insert 실패");
@@ -506,6 +508,7 @@ public class DBManager {
 			if(activity instanceof LoginActivity)   //형변환이 가능하면
 				((LoginActivity)activity).handlerRun(1);    //processDialog 닫기
 			if(result.equalsIgnoreCase("success")) {    //로그인 성공
+				putSchedule();
 				if(activity instanceof LoginActivity)   //형변환이 가능하면
 					((LoginActivity)activity).saveInfo(stuNum, password);
 				if(stuNum != null & stuNum.length() == 8) {
