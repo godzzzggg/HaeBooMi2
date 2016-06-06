@@ -86,8 +86,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 							if (password.length() < 4)
 								handlerRun(2, "비밀번호를 4자리 이상 입력해주세요.");
 							else {
-								if(stuNum.length() == 8)
-									db.DBLogin(stuNum, password, "0");	//학생
+								if(stuNum.length() == 8) {
+									db.putSchedule();   //학생일 때에는 시간표를 추가한다.
+									db.DBLogin(stuNum, password, "0");    //학생
+								}
 								else
 									db.DBLogin(stuNum, password, "1");	//교수
 							}

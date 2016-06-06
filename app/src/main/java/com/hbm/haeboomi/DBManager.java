@@ -69,7 +69,6 @@ public class DBManager {
 		super();
 		this.activity = activity;
 		idpw = new innerDB(activity).getData().split("!");
-		Log.d(TAG, idpw[0] + " " + idpw[1]);
 
 		//url.openStream() 메소드를 실행할 때 필요
 		//다음 문장이 없다면 NetworkOnMainThreadException 이 발생한다.
@@ -510,7 +509,6 @@ public class DBManager {
 			if(activity instanceof LoginActivity)   //형변환이 가능하면
 				((LoginActivity)activity).handlerRun(1);    //processDialog 닫기
 			if(result.equalsIgnoreCase("success")) {    //로그인 성공
-				putSchedule();
 				if(activity instanceof LoginActivity)   //형변환이 가능하면
 					((LoginActivity)activity).saveInfo(stuNum, password);
 				if(stuNum != null & stuNum.length() == 8) {
