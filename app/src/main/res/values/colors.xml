@@ -6,9 +6,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#40b1ff</color>
-    <color name="calendarBlue">#21a4ff</color>
+    <color name="calendarRed">#ff0000</color>
+    <color name="calendarSky">#a1e3f1</color>
+    <color name="calendarBlue">#0000FF</color>
     <color name="calendarWhite">#ffffff</color>
-    <color name="calendarSelect">#ff79f2</color>
     <color name="calendarBlack">#000000</color>
     <color name="foreground_material_light">#ffffff</color>
     <color name="black">#000000</color>

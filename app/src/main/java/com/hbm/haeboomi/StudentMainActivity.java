@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -41,7 +42,7 @@ public class StudentMainActivity extends TabActivity {
         //아래 for문은 탭의 크기, 색상 등을 지정
         for(int i = 0; i < tabhost.getTabWidget().getChildCount(); i++) {
             tabhost.getTabWidget().getChildAt(i).getLayoutParams().height = 160;
-            tabhost.getTabWidget().getChildAt(i).setBackgroundColor(getResources().getColor(R.color.hallymBlue));
+            tabhost.getTabWidget().getChildAt(i).setBackgroundColor(ContextCompat.getColor(this, R.color.hallymBlue));
 	        LinearLayout relLayout = (LinearLayout)tabhost.getTabWidget().getChildAt(i);
             TextView tv = (TextView)relLayout.getChildAt(1);
             tv.setTextSize(15);

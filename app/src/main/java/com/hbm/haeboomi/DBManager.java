@@ -83,6 +83,9 @@ public class DBManager {
 		la.execute(id, pw, division);
 	}
 
+	public String getId() {
+		return idpw[0];
+	}
 	//가입성공 : true | 가입실패 : false
 	public boolean DBRegister(String id, String pw, int passindex, int division) {
 		String u = null;
@@ -177,6 +180,14 @@ public class DBManager {
 		String url = str;
 		String pattern = "= ,`:'";
 		String word = null;
+		boolean plus = false;
+
+		for(int i = 0; i < pattern.length(); i++)
+			if(url.charAt(url.length()-1) == pattern.charAt(i)) {
+				url += '+';
+				plus = true;
+			}
+
 		for(int i = 0; url != null && i < pattern.length(); i++) {
 			boolean change = false;
 			char p = pattern.charAt(i);
@@ -192,6 +203,9 @@ public class DBManager {
 			if(change)
 				url = word;
 		}
+		if(plus)
+			url = url.substring(0, url.length() - 1);
+
 		return url;
 	}
 

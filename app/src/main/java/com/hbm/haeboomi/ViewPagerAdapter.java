@@ -60,7 +60,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
                     String pass = db.getSelectData("pass", "student", "id = " + idpw[0], DBManager.GetTable.STUDENT);
 	                if(pass.equals("" + passindex)) {
 		                attendance("2");
-		                stu_main_activity.newCalendar((int)(Math.random() * 4));
+		                stu_main_activity.newCalendar(2);
 	                }
                     break;
                 case SpassFingerprint.STATUS_AUTHENTIFICATION_PASSWORD_SUCCESS: //지문대신 비밀번호를 입력해서 통과
@@ -116,6 +116,10 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 
 		now = db.nowTime();
 		Init();
+	}
+
+	public View getViews(int i) {
+		return views.get(i);
 	}
 
     @Override
@@ -342,7 +346,6 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 			TextView lblCname = (TextView)view.findViewById(R.id.lblClassName);
 			TextView lblBuilding = (TextView)view.findViewById(R.id.lblClassRoom);
 			TextView lblTime = (TextView)view.findViewById(R.id.lblClassTime);
-
 
 			lblToday.setText(date + " (" + days[day] + ")");
 			lblCname.setText(data[0]);

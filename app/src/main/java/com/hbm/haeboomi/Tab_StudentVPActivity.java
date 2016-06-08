@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bitnpulse.beacon.util.BeaconConstant;
@@ -36,12 +37,13 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 	private boolean check_arraysize = false;
 
 	private String[] schedule;
+	private String cname;
+
     ///////////////////////
-    private int temp = 4;
     public void newCalendar(int t) {
         Intent intent = new Intent(this, CalendarActivity.class);
-        temp = t;
-        intent.putExtra("random", temp);
+        intent.putExtra("rst", t);
+	    intent.putExtra("cname", cname);
         startActivity(intent);
     }
 /////////////////
@@ -146,6 +148,8 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 					    vp.setAdapter(sub_adapter);
 					    vp.setOffscreenPageLimit(COUNT);
 					    setPosition();
+					    View v = sub_adapter.getViews(vp.getCurrentItem());
+					    cname = ((TextView)v.findViewById(R.id.lblClassName)).getText().toString();
 				    }
 			    });
 		    }
@@ -203,7 +207,10 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
     public void onClick(View v) {
         switch(v.getId()) {
 	        case R.id.btnAttendanceStatus:
-		        startActivity(new Intent(this, CalendarActivity.class).putExtra("random", temp));
+		        Intent intent = new Intent(this, CalendarActivity.class);
+		        intent.putExtra("rst", 4);
+		        intent.putExtra("cname", cname);
+		        startActivity(intent);
 		        break;
         }
     }

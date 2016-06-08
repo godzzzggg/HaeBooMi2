@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:background="@color/colorBackground"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="400dp">
-
-    </android.support.v4.view.ViewPager>
+        android:layout_height="0dp"
+        android:layout_weight="2" />
 
     <RelativeLayout
         android:id="@+id/stu_layout"
-        android:layout_below="@id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="0dp"
+        android:layout_weight="1">
         <Button
             android:id="@+id/btnAttendanceStatus"
             android:text="출결 현황"
-            android:textSize="40dp"
-            android:layout_centerVertical="true"
+            android:textSize="40sp"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
             android:layout_centerInParent="true"
             android:layout_width="300dp"
             android:layout_height="100dp"/>
-
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>

@@ -10,9 +10,10 @@
         android:id="@+id/tv_date"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/calendarBlue"
+        android:background="@color/hallymBlue"
         android:gravity="center_vertical"
-        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:textColor="@color/calendarWhite"
         android:textSize="20sp" />
 
@@ -23,30 +24,27 @@
         android:layout_height="0dp"
         android:layout_width="match_parent"
         android:numColumns="7"
-        android:listSelector="@color/calendarSelect" />
-    <RelativeLayout
+        android:listSelector="@color/calendarSky" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <View
-            android:id="@+id/view"
-            android:layout_centerInParent="true"
-            android:layout_width="10dp"
-            android:layout_height="0dp" />
         <Button
             android:id="@+id/btnPrevC"
             android:text="이전달"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@id/view"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btnNextC"
             android:text="다음달"
-            android:layout_toRightOf="@id/view"
-            android:layout_alignParentEnd="true"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

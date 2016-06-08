@@ -1,5 +1,19 @@
 package com.hbm.haeboomi;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.TextView;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,21 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.TextView;
 
-
-public class CalendarActivity extends Activity {
+public class CalendarActivity extends Activity implements View.OnClickListener {
 	private static String TAG = "EndHBM_CalendarActivity";
 	// 연/월 텍스트뷰
 	private TextView tvDate;
@@ -35,9 +36,11 @@ public class CalendarActivity extends Activity {
 	private Calendar mCal;
 	private int temp = 4;
 	private int day[][] = new int[12][31];
+	private int year;
 	private int mon;
+	private int nowMon;
+	private String[] days = {"일", "월", "화", "수", "목", "금", "토"};
 	private DBManager db;
-	boolean check = true;//그리드뷰 나누기 위한 변수
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,257 +48,178 @@ public class CalendarActivity extends Activity {
 		setContentView(R.layout.activity_calendar);
 
 		Intent intent = getIntent();
-		temp = intent.getExtras().getInt("random");
+		temp = intent.getIntExtra("random", 4);
+		String cname = intent.getStringExtra("cname");
 		Log.d(TAG, "temp : " + temp);
 		tvDate = (TextView)findViewById(R.id.tv_date);
 		gridView = (GridView)findViewById(R.id.gridview);
 		// 오늘에 날짜를 세팅 해준다.
 		long now = System.currentTimeMillis();
-		final Date date = new Date(now);
+		Date date = new Date(now);
 
 		db = new DBManager(this);
 		/////////DB가져오기
-		DBManager.innerDB innerDB = new DBManager.innerDB(this);
-		String id = innerDB.getData().split("!")[0];
-		String str = db.getSelectData("*", "attendance", "id = " + id, DBManager.GetTable.ATTENDANCE);
-		String[] Std_info = str.split("!");
+		String[] str = db.getSelectData("*", "attendance", "id = " + db.getId() + " and cname = '" + cname + "'", DBManager.GetTable.ATTENDANCE).split("\n");
 
-		for (int i = 0; i < Std_info.length; i++)
-			if (Std_info[i] != null)
-				Log.d(TAG, "String [" + i + "] : " + Std_info[i]);
-		for (int i = 0; i < day.length; i++)
-			for (int j = 0; j < day[i].length; j++)
-				day[i][j] = 4;
+		for(int i = 0; i < day.length; i++)
+			for(int j = 0; j < day[i].length; j++)
+				day[i][j] = 44;
 
-		int j = 4;
-		int cnt = 0;
-		int len = Std_info.length / 8;
-		while (cnt != len) {
-			String[] day2 = Std_info[j].split("-");
-			int Mon = Integer.parseInt(day2[1]);
-			int Day = Integer.parseInt(day2[2]);
-			Log.d(TAG, "String [day] : " + day2[1]);
-			day[Mon - 1][Day - 1] = Integer.parseInt(Std_info[j - 2]);
-			j += 8;
-			cnt++;
+		for(String s : str) {
+			String[] std_info = s.split("!");
+			if(std_info.length != 1) {
+				String[] day2 = std_info[4].split("-");
+				int Mon = Integer.parseInt(day2[1]) - 1;
+				int Day = Integer.parseInt(day2[2]) - 1;
+				int d = day[Mon][Day];
+				if(d != 44) {
+					if(d % 10 == 4)
+						day[Mon][Day] += Integer.parseInt(std_info[2]) - 4;
+				}
+				else
+					day[Mon][Day] = Integer.parseInt(std_info[2]) * 10 + 4;
+			}
 		}
 		//////////////DB가져오기
 		//연,월,일을 따로 저장
-		final SimpleDateFormat curYearFormat = new SimpleDateFormat("yyyy", Locale.KOREA);
-		final SimpleDateFormat curMonthFormat = new SimpleDateFormat("MM", Locale.KOREA);
-		final SimpleDateFormat curDayFormat = new SimpleDateFormat("dd", Locale.KOREA);
-		mon = Integer.parseInt(curMonthFormat.format(date)) - 1;
+		SimpleDateFormat curYearFormat = new SimpleDateFormat("yyyy", Locale.KOREA);
+		SimpleDateFormat curMonthFormat = new SimpleDateFormat("MM", Locale.KOREA);
+		year = Integer.parseInt(curYearFormat.format(date));
+		nowMon = mon = Integer.parseInt(curMonthFormat.format(date));
+
 		//현재 날짜 텍스트뷰에 뿌려줌
-		tvDate.setText(curYearFormat.format(date) + "/" + curMonthFormat.format(date));
-		//gridview 요일 표시
+		tvDate.setText(year + "/" + (mon < 10 ? "0" : "") + mon);
+
 		dayList = new ArrayList<>();
-		dayList.add("일");
-		dayList.add("월");
-		dayList.add("화");
-		dayList.add("수");
-		dayList.add("목");
-		dayList.add("금");
-		dayList.add("토");
-		mCal = Calendar.getInstance();
-		//이번달 1일 무슨요일인지 판단 mCal.set(Year,Month,Day)
-		mCal.set(Integer.parseInt(curYearFormat.format(date)), mon, 1);
-		int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
-		//1일 - 요일 매칭 시키기 위해 공백 add
-		for (int i = 1; i < dayNum; i++) {
-			dayList.add("");
-		}
-		setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+
 		gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+		setCalendarDate(mon);
 		gridView.setAdapter(gridAdapter);
 
-		final Button btnPrevC = (Button)findViewById(R.id.btnPrevC);
-		final Button btnNextC = (Button)findViewById(R.id.btnNextC);
+		findViewById(R.id.btnPrevC).setOnClickListener(this);
+		findViewById(R.id.btnNextC).setOnClickListener(this);
+	}
 
-		btnPrevC.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (Integer.parseInt(curMonthFormat.format(date)) == mon)
-					check = true;
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+			case R.id.btnPrevC:
+				if(--mon < 2)
+					v.setVisibility(View.INVISIBLE);
 				else
-					check = false;
-				if (mon == 1)
-					btnPrevC.setVisibility(View.INVISIBLE);
-				else
-					btnPrevC.setVisibility(View.VISIBLE);
-				btnNextC.setVisibility(View.VISIBLE);
-				dayList.clear();
-				dayList.add("일");
-				dayList.add("월");
-				dayList.add("화");
-				dayList.add("수");
-				dayList.add("목");
-				dayList.add("금");
-				dayList.add("토");
-				mCal = Calendar.getInstance();
-				mCal.set(Integer.parseInt(curYearFormat.format(date)), --mon, 1);
-				tvDate.setText(curYearFormat.format(date) + "/" + (mon < 10 ? "0" : "") + (mon + 1));
-				int PdayNum = mCal.get(Calendar.DAY_OF_WEEK);
-				//1일 - 요일 매칭 시키기 위해 공백 add
-				for (int i = 1; i < PdayNum; i++) {
-					dayList.add("");
-				}
-				setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+					v.setVisibility(View.VISIBLE);
+				((View)v.getParent()).findViewById(R.id.btnNextC).setVisibility(View.VISIBLE);
+
+				setCalendarDate(mon);
 				gridAdapter.notifyDataSetChanged();
-			}
-
-		});
-
-		btnNextC.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (Integer.parseInt(curMonthFormat.format(date)) == (mon + 2)) {
-					check = true;
-				}
-				else {
-					check = false;
-				}
-				if ((mon + 1) == 0)
-					btnPrevC.setVisibility(View.INVISIBLE);
+				break;
+			case R.id.btnNextC:
+				if(++mon > 11)
+					v.setVisibility(View.INVISIBLE);
 				else
-					btnPrevC.setVisibility(View.VISIBLE);
-				if (mon == Integer.parseInt(curMonthFormat.format(date)) - 1 || mon == 12)
-					btnNextC.setVisibility(View.INVISIBLE);
-				dayList.clear();
-				dayList.add("일");
-				dayList.add("월");
-				dayList.add("화");
-				dayList.add("수");
-				dayList.add("목");
-				dayList.add("금");
-				dayList.add("토");
-				//mCal = Calendar.getInstance();
-				mCal.set(Integer.parseInt(curYearFormat.format(date)), ++mon, 1);
+					v.setVisibility(View.VISIBLE);
+				((View)v.getParent()).findViewById(R.id.btnPrevC).setVisibility(View.VISIBLE);
 
-				tvDate.setText(curYearFormat.format(date) + "/" + (mon < 10 ? "0" : "") + (mon + 1));
-				int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
-				//1일 - 요일 매칭 시키기 위해 공백 add
-				for (int i = 1; i < dayNum; i++) {
-					dayList.add("");
-				}
-				setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+				setCalendarDate(mon);
 				gridAdapter.notifyDataSetChanged();
-			}
-
-		});
+				break;
+		}
 	}
 
 	// 해당 월에 표시할 일 수 구함
 	private void setCalendarDate(int month) {
+		dayList.clear();
+		for(int i = 0; i < days.length; i++)    //일 ~ 토까지 출력
+			dayList.add(days[i]);
+
 		mCal = Calendar.getInstance();
+		mCal.set(year, mon - 1, 1);
+
+		tvDate.setText(year + "/" + (mon < 10 ? "0" : "") + mon);
+		int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+		//1일 - 요일 매칭 시키기 위해 공백 add
+		for(int i = 1; i < dayNum; i++)
+			dayList.add("");
+
 		//오늘 day 가져옴
 		Integer today = mCal.get(Calendar.DAY_OF_MONTH);
 		mCal.set(Calendar.MONTH, month - 1);
-		for (int i = 0; i < mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
-			if ((i + 1) == today) {
-				dayList.add("" + (i + 1));
-			}
+		for(int i = 1; i <= mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+			if(i == today)
+				dayList.add("" + i);
 			else {
-				if (day[month - 1][i] == 0)
-					dayList.add("" + (i + 1) + "\n결석");
-				else if (day[month - 1][i] == 1)
-					dayList.add("" + (i + 1) + "\n지각");
-				else if (day[month - 1][i] == 2)
-					dayList.add("" + (i + 1) + "\n출석");
-				else if (day[month - 1][i] == 3)
-					dayList.add("" + (i + 1) + "\n임시출석");
-				else
-					dayList.add("" + (i + 1));
+				String text = "" + i;
+				int d = day[month - 1][i - 1];
+				switch(d / 10) {
+					case 0: text += "\n결석"; break;
+					case 1: text += "\n지각"; break;
+					case 2: text += "\n출석"; break;
+					case 3: text += "\n임시출석"; break;
+				}
+				switch(d % 10) {
+					case 0: text += "\n결석"; break;
+					case 1: text += "\n지각"; break;
+					case 2: text += "\n출석"; break;
+					case 3: text += "\n임시출석"; break;
+				}
+				dayList.add(text);
 			}
 		}
 	}
 
 	//그리드뷰 어댑터
 	private class GridAdapter extends BaseAdapter {
-		private final List<String> list;
-		private final LayoutInflater inflater;
+		private List<String> list;
+		private LayoutInflater inflater;
+		private Context context;
 
 		// 생성자
-		public GridAdapter(Context context, List<String> list) {
+		public GridAdapter(Context con, List<String> list) {
 			this.list = list;
+			context = con;
 			this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
 		public int getCount() {
-			return list.size();
-		}
+			return list.size(); }
 
 		@Override
-		public String getItem(int position) {
-			return list.get(position);
-		}
+		public String getItem(int position) { return list.get(position); }
 
 		@Override
-		public long getItemId(int position) {
-			return position;
-		}
+		public long getItemId(int position) { return position; }
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder holder = null;
-			//if (convertView == null) {
 			convertView = inflater.inflate(R.layout.item_calendar_gridview, parent, false);
-			holder = new ViewHolder();
-			holder.tvItemGridView = (TextView)convertView.findViewById(R.id.tv_item_gridview);
-			convertView.setTag(holder);
-	       /* } else {
-                convertView = inflater.inflate(R.layout.item_calendar_gridview, parent, false);
-                holder = new ViewHolder();
-                holder.tvItemGridView = (TextView)convertView.findViewById(R.id.tv_item_gridview);
-                convertView.setTag(holder);
+			TextView tvItemGridView = (TextView)convertView.findViewById(R.id.tv_item_gridview);
+			convertView.setTag(tvItemGridView);
 
-                //holder = (ViewHolder)convertView.getTag();
-            }*/
-			holder.tvItemGridView.setText("" + getItem(position));
-			//해당 날짜 텍스트 컬러,배경 변경
+			tvItemGridView.setText(getItem(position));
+
 			mCal = Calendar.getInstance();
-
 			//오늘 day 가져옴
 			Integer today = mCal.get(Calendar.DAY_OF_MONTH);
-			Integer tomonth = mCal.get(Calendar.MONTH) + 1;
-			String sToday = String.valueOf(today);
-			String sTomonth = String.valueOf(tomonth);
+			String sToday = today.toString();
 
-			//Log.d(TAG, "position : " + position);
-			//Log.d(TAG, "sToday : " + getItem(position));
+			if(position % 7 == 0)   //일요일
+				tvItemGridView.setTextColor(ContextCompat.getColor(context, R.color.calendarRed));
+			else if(position % 7 == 6)  //토요일
+				tvItemGridView.setTextColor(ContextCompat.getColor(context, R.color.calendarBlue));
 
-			if (check == true) {
-				if (sToday.equals(getItem(position))) { //오늘 day 텍스트 컬러 변경
-					holder.tvItemGridView.setTextColor(getResources().getColor(R.color.calendarBlack));
-					if (temp == 0) {
-						holder.tvItemGridView.setText("" + getItem(position) + "\n결석");
-					}
-					else if (temp == 1) {
-						holder.tvItemGridView.setText("" + getItem(position) + "\n지각");
-					}
-					else if (temp == 2) {
-						holder.tvItemGridView.setText("" + getItem(position) + "\n출석");
-					}
-					else if (temp == 3) {
-						holder.tvItemGridView.setText("" + getItem(position) + "\n임시출석");
-					}
-					else {
-						holder.tvItemGridView.setText("" + getItem(position));
-					}
-
-					check = false;
+			if(nowMon == mon && sToday.equals(getItem(position).split("\n")[0])) { //오늘 day 텍스트 컬러 변경
+				tvItemGridView.setTextColor(ContextCompat.getColor(context, R.color.calendarBlack));
+				String text = getItem(position);
+				switch(temp) {
+					case 0: text += "\n결석"; break;
+					case 1: text += "\n지각"; break;
+					case 2: text += "\n출석"; break;
+					case 3: text += "\n임시출석"; break;
 				}
+				tvItemGridView.setText(text);
 			}
-
 			return convertView;
-
-
 		}
 	}
-
-	private class ViewHolder {
-		TextView tvItemGridView;
-	}
-
 }

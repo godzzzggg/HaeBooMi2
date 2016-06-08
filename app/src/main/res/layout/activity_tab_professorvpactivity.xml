@@ -1,44 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:background="@color/colorBackground"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="400dp">
-
-    </android.support.v4.view.ViewPager>
+        android:layout_height="0dp"
+        android:layout_weight="2" />
 
     <RelativeLayout
         android:id="@+id/pf_layout"
-        android:layout_below="@id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <Button
             android:id="@+id/btnPfLeft"
             android:text="출석"
-            android:textSize="40dp"
+            android:textSize="40sp"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
             android:layout_width="100dp"
             android:layout_height="100dp"/>
         <Button
             android:id="@+id/btnPfCenter"
             android:text="지각"
-            android:textSize="40dp"
+            android:textSize="40sp"
             android:layout_centerInParent="true"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
             android:layout_width="100dp"
             android:layout_height="100dp"/>
         <Button
             android:id="@+id/btnPfRight"
             android:text="결석"
-            android:textSize="40dp"
-            android:layout_alignParentRight="true"
+            android:textSize="40sp"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/hallymBlue"
+            android:background="@drawable/button_hallym"
             android:layout_width="100dp"
             android:layout_height="100dp"/>
 
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>
