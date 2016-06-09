@@ -87,9 +87,6 @@ public class CalendarActivity extends Activity implements View.OnClickListener {
 		year = Integer.parseInt(curYearFormat.format(date));
 		nowMon = mon = Integer.parseInt(curMonthFormat.format(date));
 
-		//현재 날짜 텍스트뷰에 뿌려줌
-		tvDate.setText(year + "/" + (mon < 10 ? "0" : "") + mon);
-
 		dayList = new ArrayList<>();
 
 		gridAdapter = new GridAdapter(getApplicationContext(), dayList);
@@ -154,13 +151,13 @@ public class CalendarActivity extends Activity implements View.OnClickListener {
 					case 0: text += "\n결석"; break;
 					case 1: text += "\n지각"; break;
 					case 2: text += "\n출석"; break;
-					case 3: text += "\n임시출석"; break;
+					case 3: text += "\n임시"; break;
 				}
 				switch(d % 10) {
 					case 0: text += "\n결석"; break;
 					case 1: text += "\n지각"; break;
 					case 2: text += "\n출석"; break;
-					case 3: text += "\n임시출석"; break;
+					case 3: text += "\n임시"; break;
 				}
 				dayList.add(text);
 			}
