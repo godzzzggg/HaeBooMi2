@@ -413,7 +413,7 @@ public class ViewPagerAdapter extends PagerAdapter implements View.OnClickListen
 						else if (hour == h && m - minute > limit_max_late)   //결석처리 되는 시간(지각처리가 허용되는 시점을 넘으면 결석으로 처리)
 							result = "0";
 
-						if (db.attendance(id, now[0], day, schedule[pos].split("/")[3], bc_classno, result, now[1])) {
+						if (result.length() != 0 && db.attendance(id, now[0], day, schedule[pos].split("/")[3], bc_classno, result, now[1])) {
 							stu_main_activity.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {

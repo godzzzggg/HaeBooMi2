@@ -211,16 +211,17 @@ public class DBManager {
 
 	public boolean attendance(String id, String date, int day, String time, String c, String result, String chk_time) {
 		try {
-			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + parsePHP(time) + "&class=" + c;
+			time = parsePHP(time);
+			String u = SERVER_ADDRESS + "attendance.php?" + "st_id=" + id + "&day=" + day + "&time=" + time + "&class=" + c;
 			if(SuccessFail(u).equalsIgnoreCase("success")) {    //시간표와 비교하여 해당시간에 강의가 있는지 확인
-				String[] temp = getSelectData("cname, divide", "st_schedule", "id=" + id + " and time='" + parsePHP(time) + "'" + " and day=" + day, GetTable.ST_SCHEDULE).split("!");
+				String[] temp = getSelectData("cname, divide", "st_schedule", "id=" + id + " and time='" + time + "' and day=" + day, GetTable.ST_SCHEDULE).split("!");
 				String[] schedule = new String[2];  //과목명과 분반정보를 얻어옴
 				for(int i = 0, j = 0; j < schedule.length && i < temp.length; i++)
 					if(temp[i] != null)
 						schedule[j++] = temp[i];
 
 				u = SERVER_ADDRESS + "attendance_insert.php?" + "id=" + id + "&cname=" + schedule[0] + "&divide=" + schedule[1]
-						+ "&day=" + day + "&time=" + parsePHP(time) + "&date=" + date + "&result=" + result + "&chk_time=" + chk_time;
+						+ "&day=" + day + "&time=" + time + "&date=" + date + "&result=" + result + "&chk_time=" + chk_time;
 
 				if(SuccessFail(u).equalsIgnoreCase("success"))
 					return true;
@@ -482,7 +483,7 @@ public class DBManager {
 			String division = params[2].equals("0") ? "student_login.php" : "professor_login.php";
 
 			InputStream is = null;
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			List<NameValuePair> nameValuePairs = new ArrayList<>();
 			nameValuePairs.add(new BasicNameValuePair(division.charAt(0) == 's' ? "st_id" : "pr_id", id));
 			nameValuePairs.add(new BasicNameValuePair(division.charAt(0) == 's' ? "st_pw" : "pr_pw", pw));
 			String result = null;

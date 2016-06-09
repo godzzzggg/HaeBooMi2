@@ -148,8 +148,6 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
 					    vp.setAdapter(sub_adapter);
 					    vp.setOffscreenPageLimit(COUNT);
 					    setPosition();
-					    View v = sub_adapter.getViews(vp.getCurrentItem());
-					    cname = ((TextView)v.findViewById(R.id.lblClassName)).getText().toString();
 				    }
 			    });
 		    }
@@ -207,6 +205,9 @@ public class Tab_StudentVPActivity extends FragmentActivity implements View.OnCl
     public void onClick(View v) {
         switch(v.getId()) {
 	        case R.id.btnAttendanceStatus:
+		        View vw = sub_adapter.getViews(vp.getCurrentItem());    //현재 보고있는 View를 얻는다.
+		        cname = ((TextView)vw.findViewById(R.id.lblClassName)).getText().toString();    //강의명을 가져온다.
+
 		        Intent intent = new Intent(this, CalendarActivity.class);
 		        intent.putExtra("rst", 4);
 		        intent.putExtra("cname", cname);
